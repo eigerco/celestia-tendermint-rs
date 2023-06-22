@@ -130,17 +130,46 @@ pub struct Header {
     #[serde(with = "crate::serializers::bytes::hexstring")]
     pub proposer_address: ::prost::alloc::vec::Vec<u8>,
 }
-/// Data contains the set of transactions included in the block
+/// Data contains all the information needed for a consensus full node to
+/// reconstruct an extended data square.
 #[derive(::serde::Deserialize, ::serde::Serialize)]
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Data {
-    /// Txs that will be applied by state @ block.Height+1.
-    /// NOTE: not all txs here are valid.  We're just agreeing on the order first.
-    /// This means that block.AppHash does not include these txs.
+    /// Txs that will be applied to state in block.Height + 1 because deferred execution.
+    /// This means that the block.AppHash of this block does not include these txs.
+    /// NOTE: not all txs here are valid. We're just agreeing on the order first.
     #[prost(bytes = "vec", repeated, tag = "1")]
     #[serde(with = "crate::serializers::txs")]
     pub txs: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    /// SquareSize is the number of rows or columns in the original data square.
+    #[prost(uint64, tag = "5")]
+    pub square_size: u64,
+    /// Hash is the root of a binary Merkle tree where the leaves of the tree are
+    /// the row and column roots of an extended data square. Hash is often referred
+    /// to as the "data root".
+    #[prost(bytes = "vec", tag = "6")]
+    #[serde(with = "crate::serializers::bytes::hexstring")]
+    pub hash: ::prost::alloc::vec::Vec<u8>,
+}
+/// Blob (named after binary large object) is a chunk of data submitted by a user
+/// to be published to the Celestia blockchain. The data of a Blob is published
+/// to a namespace and is encoded into shares based on the format specified by
+/// share_version.
+#[derive(::serde::Deserialize, ::serde::Serialize)]
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Blob {
+    #[prost(bytes = "vec", tag = "1")]
+    #[serde(with = "crate::serializers::bytes::base64string")]
+    pub namespace_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes = "vec", tag = "2")]
+    #[serde(with = "crate::serializers::bytes::base64string")]
+    pub data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag = "3")]
+    pub share_version: u32,
+    #[prost(uint32, tag = "4")]
+    pub namespace_version: u32,
 }
 /// Vote represents a prevote, precommit, or commit vote from validators for
 /// consensus.
@@ -254,7 +283,17 @@ pub struct BlockMeta {
     #[serde(with = "crate::serializers::from_str")]
     pub num_txs: i64,
 }
-/// TxProof represents a Merkle proof of the presence of a transaction in the Merkle tree.
+/// TxProof represents a Merkle proof of the presence of a transaction in the
+/// Merkle tree.
+///
+/// Note: TxProof is not used in celestia-core because of modifications to the
+/// data root. In a normal Cosmos chain, the data root is the root of a Merkle
+/// tree of transactions in the block. However, in Celestia the data root is the
+/// root of the row and column roots in the extended data square. See
+/// <https://github.com/celestiaorg/celestia-app/blob/852a229f11f0f269021b36f7621609f432bb858b/pkg/da/data_availability_header.go>
+/// for more details. Therefore, TxProof isn't sufficient to prove the existence
+/// of a transaction in a Celestia block and ShareProof was defined instead. See
+/// ShareProof for more details.
 #[derive(::serde::Deserialize, ::serde::Serialize)]
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -268,20 +307,93 @@ pub struct TxProof {
     #[prost(message, optional, tag = "3")]
     pub proof: ::core::option::Option<super::crypto::Proof>,
 }
+/// IndexWrapper adds index metadata to a transaction. This is used to track
+/// transactions that pay for blobs, and where the blobs start in the square.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct IndexWrapper {
+    #[prost(bytes = "vec", tag = "1")]
+    pub tx: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, repeated, tag = "2")]
+    pub share_indexes: ::prost::alloc::vec::Vec<u32>,
+    #[prost(string, tag = "3")]
+    pub type_id: ::prost::alloc::string::String,
+}
+/// BlobTx wraps an encoded sdk.Tx with a second field to contain blobs of data.
+/// The raw bytes of the blobs are not signed over, instead we verify each blob
+/// using the relevant MsgPayForBlobs that is signed over in the encoded sdk.Tx.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BlobTx {
+    #[prost(bytes = "vec", tag = "1")]
+    pub tx: ::prost::alloc::vec::Vec<u8>,
+    #[prost(message, repeated, tag = "2")]
+    pub blobs: ::prost::alloc::vec::Vec<Blob>,
+    #[prost(string, tag = "3")]
+    pub type_id: ::prost::alloc::string::String,
+}
+/// ShareProof is an NMT proof that a set of shares exist in a set of rows and a
+/// Merkle proof that those rows exist in a Merkle tree with a given data root.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ShareProof {
+    #[prost(bytes = "vec", repeated, tag = "1")]
+    pub data: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(message, repeated, tag = "2")]
+    pub share_proofs: ::prost::alloc::vec::Vec<NmtProof>,
+    #[prost(bytes = "vec", tag = "3")]
+    pub namespace_id: ::prost::alloc::vec::Vec<u8>,
+    #[prost(message, optional, tag = "4")]
+    pub row_proof: ::core::option::Option<RowProof>,
+    #[prost(uint32, tag = "5")]
+    pub namespace_version: u32,
+}
+/// RowProof is a Merkle proof that a set of rows exist in a Merkle tree with a
+/// given data root.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RowProof {
+    #[prost(bytes = "vec", repeated, tag = "1")]
+    pub row_roots: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    #[prost(message, repeated, tag = "2")]
+    pub proofs: ::prost::alloc::vec::Vec<super::crypto::Proof>,
+    #[prost(bytes = "vec", tag = "3")]
+    pub root: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint32, tag = "4")]
+    pub start_row: u32,
+    #[prost(uint32, tag = "5")]
+    pub end_row: u32,
+}
+/// NMTProof is a proof of a namespace.ID in an NMT.
+/// In case this proof proves the absence of a namespace.ID
+/// in a tree it also contains the leaf hashes of the range
+/// where that namespace would be.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct NmtProof {
+    /// Start index of this proof.
+    #[prost(int32, tag = "1")]
+    pub start: i32,
+    /// End index of this proof.
+    #[prost(int32, tag = "2")]
+    pub end: i32,
+    /// Nodes that together with the corresponding leaf values can be used to
+    /// recompute the root and verify this proof. Nodes should consist of the max
+    /// and min namespaces along with the actual hash, resulting in each being 48
+    /// bytes each
+    #[prost(bytes = "vec", repeated, tag = "3")]
+    pub nodes: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+    /// leafHash are nil if the namespace is present in the NMT. In case the
+    /// namespace to be proved is in the min/max range of the tree but absent, this
+    /// will contain the leaf hash necessary to verify the proof of absence. Leaf
+    /// hashes should consist of the namespace along with the actual hash,
+    /// resulting 40 bytes total.
+    #[prost(bytes = "vec", tag = "4")]
+    pub leaf_hash: ::prost::alloc::vec::Vec<u8>,
+}
 /// BlockIdFlag indicates which BlcokID the signature is for
-#[derive(
-    ::num_derive::FromPrimitive,
-    ::num_derive::ToPrimitive,
-    Clone,
-    Copy,
-    Debug,
-    PartialEq,
-    Eq,
-    Hash,
-    PartialOrd,
-    Ord,
-    ::prost::Enumeration,
-)]
+#[derive(::num_derive::FromPrimitive, ::num_derive::ToPrimitive)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum BlockIdFlag {
     Unknown = 0,
@@ -347,16 +459,6 @@ impl SignedMsgType {
             _ => None,
         }
     }
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventDataRoundState {
-    #[prost(int64, tag = "1")]
-    pub height: i64,
-    #[prost(int32, tag = "2")]
-    pub round: i32,
-    #[prost(string, tag = "3")]
-    pub step: ::prost::alloc::string::String,
 }
 /// ConsensusParams contains consensus critical parameters that determine the
 /// validity of blocks.
@@ -513,6 +615,29 @@ pub struct EvidenceList {
 #[derive(::serde::Deserialize, ::serde::Serialize)]
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Block {
+    #[prost(message, optional, tag = "1")]
+    pub header: ::core::option::Option<Header>,
+    #[prost(message, optional, tag = "2")]
+    pub data: ::core::option::Option<Data>,
+    #[prost(message, optional, tag = "3")]
+    pub evidence: ::core::option::Option<EvidenceList>,
+    #[prost(message, optional, tag = "4")]
+    pub last_commit: ::core::option::Option<Commit>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventDataRoundState {
+    #[prost(int64, tag = "1")]
+    pub height: i64,
+    #[prost(int32, tag = "2")]
+    pub round: i32,
+    #[prost(string, tag = "3")]
+    pub step: ::prost::alloc::string::String,
+}
+#[derive(::serde::Deserialize, ::serde::Serialize)]
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CanonicalBlockId {
     #[prost(bytes = "vec", tag = "1")]
     pub hash: ::prost::alloc::vec::Vec<u8>,
@@ -568,17 +693,4 @@ pub struct CanonicalVote {
     pub timestamp: ::core::option::Option<crate::google::protobuf::Timestamp>,
     #[prost(string, tag = "6")]
     pub chain_id: ::prost::alloc::string::String,
-}
-#[derive(::serde::Deserialize, ::serde::Serialize)]
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Block {
-    #[prost(message, optional, tag = "1")]
-    pub header: ::core::option::Option<Header>,
-    #[prost(message, optional, tag = "2")]
-    pub data: ::core::option::Option<Data>,
-    #[prost(message, optional, tag = "3")]
-    pub evidence: ::core::option::Option<EvidenceList>,
-    #[prost(message, optional, tag = "4")]
-    pub last_commit: ::core::option::Option<Commit>,
 }

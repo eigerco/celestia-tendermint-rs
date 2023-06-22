@@ -1,6 +1,7 @@
 pub use crate::abci::response::{
     ApplySnapshotChunk, BeginBlock, CheckTx, Commit, DeliverTx, Echo, EndBlock, Exception, Info,
-    InitChain, ListSnapshots, LoadSnapshotChunk, OfferSnapshot, Query, SetOption,
+    InitChain, ListSnapshots, LoadSnapshotChunk, OfferSnapshot, PrepareProposal, ProcessProposal,
+    Query, SetOption,
 };
 use crate::abci::response::{ConsensusResponse, InfoResponse, MempoolResponse, SnapshotResponse};
 use crate::Error;
@@ -40,6 +41,8 @@ pub enum Response {
     LoadSnapshotChunk(LoadSnapshotChunk),
     #[doc = include_str!("../../abci/doc/response-applysnapshotchunk.md")]
     ApplySnapshotChunk(ApplySnapshotChunk),
+    PrepareProposal(PrepareProposal),
+    ProcessProposal(ProcessProposal),
 }
 
 impl From<ConsensusResponse> for Response {
@@ -167,6 +170,8 @@ impl From<Response> for pb::Response {
             Response::OfferSnapshot(x) => Some(Value::OfferSnapshot(x.into())),
             Response::LoadSnapshotChunk(x) => Some(Value::LoadSnapshotChunk(x.into())),
             Response::ApplySnapshotChunk(x) => Some(Value::ApplySnapshotChunk(x.into())),
+            Response::PrepareProposal(x) => Some(Value::PrepareProposal(x.into())),
+            Response::ProcessProposal(x) => Some(Value::ProcessProposal(x.into())),
         };
         pb::Response { value }
     }
@@ -194,6 +199,8 @@ impl TryFrom<pb::Response> for Response {
             Some(Value::OfferSnapshot(x)) => Ok(Response::OfferSnapshot(x.try_into()?)),
             Some(Value::LoadSnapshotChunk(x)) => Ok(Response::LoadSnapshotChunk(x.try_into()?)),
             Some(Value::ApplySnapshotChunk(x)) => Ok(Response::ApplySnapshotChunk(x.try_into()?)),
+            Some(Value::PrepareProposal(x)) => Ok(Response::PrepareProposal(x.try_into()?)),
+            Some(Value::ProcessProposal(x)) => Ok(Response::ProcessProposal(x.try_into()?)),
             None => Err(crate::Error::missing_data()),
         }
     }

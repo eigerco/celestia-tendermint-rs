@@ -2,6 +2,7 @@
 
 mod commit;
 pub mod commit_sig;
+mod data;
 pub mod header;
 mod height;
 mod id;
@@ -12,11 +13,12 @@ pub mod signed_header;
 mod size;
 
 use serde::{Deserialize, Serialize};
-use tendermint_proto::v0_37::types::Block as RawBlock;
+use tendermint_proto::v0_34::types::Block as RawBlock;
 
 pub use self::{
     commit::*,
     commit_sig::*,
+    data::Data,
     header::Header,
     height::*,
     id::{Id, ParseId},
@@ -39,7 +41,7 @@ pub struct Block {
     pub header: Header,
 
     /// Transaction data
-    pub data: Vec<Vec<u8>>,
+    pub data: Data,
 
     /// Evidence of malfeasance
     pub evidence: evidence::List,
@@ -48,10 +50,11 @@ pub struct Block {
     pub last_commit: Option<Commit>,
 }
 
-tendermint_pb_modules! {
-    use super::{Block, Header, Commit};
-    use crate::{Error, prelude::*};
-    use pb::types::Block as RawBlock;
+mod v0_34 {
+    use super::{Block, Commit, Header};
+    use crate::{prelude::*, Error};
+    use tendermint_proto::v0_34::types::Block as RawBlock;
+    use tendermint_proto::Protobuf;
 
     impl Protobuf<RawBlock> for Block {}
 
@@ -80,8 +83,12 @@ tendermint_pb_modules! {
 
             Ok(Block {
                 header,
-                data: value.data.ok_or_else(Error::missing_data)?.txs,
-                evidence: value.evidence.map(TryInto::try_into).transpose()?.unwrap_or_default(),
+                data: value.data.ok_or_else(Error::missing_data)?.try_into()?,
+                evidence: value
+                    .evidence
+                    .map(TryInto::try_into)
+                    .transpose()?
+                    .unwrap_or_default(),
                 last_commit,
             })
         }
@@ -89,10 +96,9 @@ tendermint_pb_modules! {
 
     impl From<Block> for RawBlock {
         fn from(value: Block) -> Self {
-            use pb::types::Data as RawData;
             RawBlock {
                 header: Some(value.header.into()),
-                data: Some(RawData { txs: value.data }),
+                data: Some(value.data.into()),
                 evidence: Some(value.evidence.into()),
                 last_commit: value.last_commit.map(Into::into),
             }
@@ -104,7 +110,7 @@ impl Block {
     /// constructor
     pub fn new(
         header: Header,
-        data: Vec<Vec<u8>>,
+        data: Data,
         evidence: evidence::List,
         last_commit: Option<Commit>,
     ) -> Result<Self, Error> {
@@ -132,7 +138,7 @@ impl Block {
     }
 
     /// Get data
-    pub fn data(&self) -> &Vec<Vec<u8>> {
+    pub fn data(&self) -> &Data {
         &self.data
     }
 

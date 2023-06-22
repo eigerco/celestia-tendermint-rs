@@ -188,8 +188,8 @@ define_error! {
         UnsupportedOfferSnapshotChunkResult
             |_| { format_args!("unsupported OfferSnapshotChunkResult type" ) },
 
-        UnsupportedProcessProposalStatus
-            |_| { format_args!("unsupported ProcessProposal status value" ) },
+        UnsupportedProcessProposalResult
+            |_| { format_args!("unsupported ProcessProposal result value" ) },
 
         NegativeMaxAgeNum
             [ DisplayOnly<TryFromIntError> ]
