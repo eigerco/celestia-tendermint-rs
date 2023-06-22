@@ -190,8 +190,8 @@ impl From<Request> for pb::Request {
             Request::OfferSnapshot(x) => Some(Value::OfferSnapshot(x.into())),
             Request::LoadSnapshotChunk(x) => Some(Value::LoadSnapshotChunk(x.into())),
             Request::ApplySnapshotChunk(x) => Some(Value::ApplySnapshotChunk(x.into())),
-            Request::PrepareProposal(x) => Some(Value::PrepareProposal(x.into())),
-            Request::ProcessProposal(x) => Some(Value::ProcessProposal(x.into())),
+            Request::PrepareProposal(_) => panic!("unsupported"),
+            Request::ProcessProposal(_) => panic!("unsupported"),
         };
         pb::Request { value }
     }
@@ -217,8 +217,8 @@ impl TryFrom<pb::Request> for Request {
             Some(Value::OfferSnapshot(x)) => Ok(Request::OfferSnapshot(x.try_into()?)),
             Some(Value::LoadSnapshotChunk(x)) => Ok(Request::LoadSnapshotChunk(x.try_into()?)),
             Some(Value::ApplySnapshotChunk(x)) => Ok(Request::ApplySnapshotChunk(x.try_into()?)),
-            Some(Value::PrepareProposal(x)) => Ok(Request::PrepareProposal(x.try_into()?)),
-            Some(Value::ProcessProposal(x)) => Ok(Request::ProcessProposal(x.try_into()?)),
+            Some(Value::PrepareProposal(_)) => panic!("unsupported"),
+            Some(Value::ProcessProposal(_)) => panic!("unsupported"),
             None => Err(crate::Error::missing_data()),
         }
     }

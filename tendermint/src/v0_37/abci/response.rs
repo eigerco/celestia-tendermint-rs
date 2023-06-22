@@ -166,8 +166,8 @@ impl From<Response> for pb::Response {
             Response::OfferSnapshot(x) => Some(Value::OfferSnapshot(x.into())),
             Response::LoadSnapshotChunk(x) => Some(Value::LoadSnapshotChunk(x.into())),
             Response::ApplySnapshotChunk(x) => Some(Value::ApplySnapshotChunk(x.into())),
-            Response::PrepareProposal(x) => Some(Value::PrepareProposal(x.into())),
-            Response::ProcessProposal(x) => Some(Value::ProcessProposal(x.into())),
+            Response::PrepareProposal(_) => unimplemented!("unsupported"),
+            Response::ProcessProposal(_) => unimplemented!("unsupported"),
         };
         pb::Response { value }
     }
@@ -194,8 +194,8 @@ impl TryFrom<pb::Response> for Response {
             Some(Value::OfferSnapshot(x)) => Ok(Response::OfferSnapshot(x.try_into()?)),
             Some(Value::LoadSnapshotChunk(x)) => Ok(Response::LoadSnapshotChunk(x.try_into()?)),
             Some(Value::ApplySnapshotChunk(x)) => Ok(Response::ApplySnapshotChunk(x.try_into()?)),
-            Some(Value::PrepareProposal(x)) => Ok(Response::PrepareProposal(x.try_into()?)),
-            Some(Value::ProcessProposal(x)) => Ok(Response::ProcessProposal(x.try_into()?)),
+            Some(Value::PrepareProposal(_)) => unimplemented!("unsupported"),
+            Some(Value::ProcessProposal(_)) => unimplemented!("unsupported"),
             None => Err(crate::Error::missing_data()),
         }
     }

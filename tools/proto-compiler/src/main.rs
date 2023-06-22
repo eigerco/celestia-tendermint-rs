@@ -35,6 +35,15 @@ fn main() {
             "[info] => Fetching {} at {} into {tendermint_dir:?}",
             version.repo, version.commitish,
         );
+
+        let repo_name = version
+            .repo
+            .rsplit_once('/')
+            .map(|s| s.1)
+            .unwrap_or(&version.repo);
+
+        let tendermint_dir = tendermint_dir.join(repo_name);
+
         get_commitish(&tendermint_dir, &version.repo, &version.commitish); // This panics if it fails.
 
         let proto_path = tendermint_dir.join("proto");

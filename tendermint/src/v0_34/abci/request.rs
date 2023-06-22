@@ -7,7 +7,8 @@ use crate::Error;
 
 pub use crate::abci::request::{
     ApplySnapshotChunk, BeginBlock, CheckTx, CheckTxKind, DeliverTx, Echo, EndBlock, Info,
-    InitChain, LoadSnapshotChunk, OfferSnapshot, Query, SetOption,
+    InitChain, LoadSnapshotChunk, OfferSnapshot, PrepareProposal, ProcessProposal, Query,
+    SetOption,
 };
 
 /// All possible ABCI requests.
@@ -44,6 +45,8 @@ pub enum Request {
     LoadSnapshotChunk(LoadSnapshotChunk),
     #[doc = include_str!("../../abci/doc/request-applysnapshotchunk.md")]
     ApplySnapshotChunk(ApplySnapshotChunk),
+    PrepareProposal(PrepareProposal),
+    ProcessProposal(ProcessProposal),
 }
 
 impl Request {
@@ -53,6 +56,8 @@ impl Request {
         match self {
             Flush => MethodKind::Flush,
             InitChain(_) => MethodKind::Consensus,
+            PrepareProposal(_) => MethodKind::Consensus,
+            ProcessProposal(_) => MethodKind::Consensus,
             BeginBlock(_) => MethodKind::Consensus,
             DeliverTx(_) => MethodKind::Consensus,
             EndBlock(_) => MethodKind::Consensus,
@@ -191,6 +196,8 @@ impl From<Request> for pb::Request {
             Request::OfferSnapshot(x) => Some(Value::OfferSnapshot(x.into())),
             Request::LoadSnapshotChunk(x) => Some(Value::LoadSnapshotChunk(x.into())),
             Request::ApplySnapshotChunk(x) => Some(Value::ApplySnapshotChunk(x.into())),
+            Request::PrepareProposal(x) => Some(Value::PrepareProposal(x.into())),
+            Request::ProcessProposal(x) => Some(Value::ProcessProposal(x.into())),
         };
         pb::Request { value }
     }
@@ -217,6 +224,8 @@ impl TryFrom<pb::Request> for Request {
             Some(Value::OfferSnapshot(x)) => Ok(Request::OfferSnapshot(x.try_into()?)),
             Some(Value::LoadSnapshotChunk(x)) => Ok(Request::LoadSnapshotChunk(x.try_into()?)),
             Some(Value::ApplySnapshotChunk(x)) => Ok(Request::ApplySnapshotChunk(x.try_into()?)),
+            Some(Value::PrepareProposal(x)) => Ok(Request::PrepareProposal(x.try_into()?)),
+            Some(Value::ProcessProposal(x)) => Ok(Request::ProcessProposal(x.try_into()?)),
             None => Err(crate::Error::missing_data()),
         }
     }

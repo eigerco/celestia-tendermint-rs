@@ -3,7 +3,7 @@
 pub struct Request {
     #[prost(
         oneof = "request::Value",
-        tags = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15"
+        tags = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17"
     )]
     pub value: ::core::option::Option<request::Value>,
 }
@@ -42,6 +42,10 @@ pub mod request {
         LoadSnapshotChunk(super::RequestLoadSnapshotChunk),
         #[prost(message, tag = "15")]
         ApplySnapshotChunk(super::RequestApplySnapshotChunk),
+        #[prost(message, tag = "16")]
+        PrepareProposal(super::RequestPrepareProposal),
+        #[prost(message, tag = "17")]
+        ProcessProposal(super::RequestProcessProposal),
     }
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -174,10 +178,30 @@ pub struct RequestApplySnapshotChunk {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RequestPrepareProposal {
+    /// block_data is an array of transactions that will be included in a block,
+    /// sent to the app for possible modifications.
+    /// applications can not exceed the size of the data passed to it.
+    #[prost(message, optional, tag = "1")]
+    pub block_data: ::core::option::Option<super::types::Data>,
+    /// If an application decides to populate block_data with extra information, they can not exceed this value.
+    #[prost(int64, tag = "2")]
+    pub block_data_size: i64,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RequestProcessProposal {
+    #[prost(message, optional, tag = "1")]
+    pub header: ::core::option::Option<super::types::Header>,
+    #[prost(message, optional, tag = "2")]
+    pub block_data: ::core::option::Option<super::types::Data>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Response {
     #[prost(
         oneof = "response::Value",
-        tags = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16"
+        tags = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18"
     )]
     pub value: ::core::option::Option<response::Value>,
 }
@@ -218,6 +242,10 @@ pub mod response {
         LoadSnapshotChunk(super::ResponseLoadSnapshotChunk),
         #[prost(message, tag = "16")]
         ApplySnapshotChunk(super::ResponseApplySnapshotChunk),
+        #[prost(message, tag = "17")]
+        PrepareProposal(super::ResponsePrepareProposal),
+        #[prost(message, tag = "18")]
+        ProcessProposal(super::ResponseProcessProposal),
     }
 }
 /// nondeterministic
@@ -397,7 +425,17 @@ pub struct ResponseOfferSnapshot {
 }
 /// Nested message and enum types in `ResponseOfferSnapshot`.
 pub mod response_offer_snapshot {
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
     #[repr(i32)]
     pub enum Result {
         /// Unknown result, abort all snapshot restoration
@@ -462,7 +500,17 @@ pub struct ResponseApplySnapshotChunk {
 }
 /// Nested message and enum types in `ResponseApplySnapshotChunk`.
 pub mod response_apply_snapshot_chunk {
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
     #[repr(i32)]
     pub enum Result {
         /// Unknown result, abort all snapshot restoration
@@ -502,6 +550,65 @@ pub mod response_apply_snapshot_chunk {
                 "RETRY" => Some(Self::Retry),
                 "RETRY_SNAPSHOT" => Some(Self::RetrySnapshot),
                 "REJECT_SNAPSHOT" => Some(Self::RejectSnapshot),
+                _ => None,
+            }
+        }
+    }
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ResponsePrepareProposal {
+    #[prost(message, optional, tag = "1")]
+    pub block_data: ::core::option::Option<super::types::Data>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ResponseProcessProposal {
+    #[prost(enumeration = "response_process_proposal::Result", tag = "1")]
+    pub result: i32,
+    #[prost(bytes = "bytes", repeated, tag = "2")]
+    pub evidence: ::prost::alloc::vec::Vec<::prost::bytes::Bytes>,
+}
+/// Nested message and enum types in `ResponseProcessProposal`.
+pub mod response_process_proposal {
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum Result {
+        /// Unknown result, invalidate
+        Unknown = 0,
+        /// proposal verified, vote on the proposal
+        Accept = 1,
+        /// proposal invalidated
+        Reject = 2,
+    }
+    impl Result {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Result::Unknown => "UNKNOWN",
+                Result::Accept => "ACCEPT",
+                Result::Reject => "REJECT",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "UNKNOWN" => Some(Self::Unknown),
+                "ACCEPT" => Some(Self::Accept),
+                "REJECT" => Some(Self::Reject),
                 _ => None,
             }
         }

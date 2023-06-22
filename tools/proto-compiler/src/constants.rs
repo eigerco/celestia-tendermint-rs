@@ -17,9 +17,9 @@ pub struct TendermintVersion {
 /// All Tendermint versions to generate code for
 pub const TENDERMINT_VERSIONS: &[TendermintVersion] = &[
     TendermintVersion {
-        repo: "https://github.com/cometbft/cometbft",
+        repo: "https://github.com/celestiaorg/celestia-core",
         ident: "v0_34",
-        commitish: "v0.34.27",
+        commitish: "v0.34.x-celestia",
     },
     TendermintVersion {
         repo: "https://github.com/cometbft/cometbft",
@@ -70,8 +70,9 @@ const RENAME_PARTS: &str = r#"#[serde(rename = "parts", alias = "part_set_header
 /// https://docs.rs/prost-build/0.6.1/prost_build/struct.Config.html#method.btree_map
 pub static CUSTOM_TYPE_ATTRIBUTES: &[(&str, &str)] = &[
     (".tendermint.libs.bits.BitArray", SERIALIZED),
-    (".tendermint.types.BlockIDFlag", PRIMITIVE_ENUM),
+    (".tendermint.types.Blob", SERIALIZED),
     (".tendermint.types.Block", SERIALIZED),
+    (".tendermint.types.BlockIDFlag", PRIMITIVE_ENUM),
     (".tendermint.types.Data", SERIALIZED),
     (".tendermint.types.EvidenceParams", SERIALIZED),
     (".tendermint.types.Evidence.sum", SERIALIZED),
@@ -111,6 +112,8 @@ pub static CUSTOM_TYPE_ATTRIBUTES: &[(&str, &str)] = &[
 /// The first item is a path as defined in the prost_build::Config::btree_map here:
 /// https://docs.rs/prost-build/0.6.1/prost_build/struct.Config.html#method.btree_map
 pub static CUSTOM_FIELD_ATTRIBUTES: &[(&str, &str)] = &[
+    (".tendermint.types.Blob.data", BASE64STRING),
+    (".tendermint.types.Blob.namespace_id", BASE64STRING),
     (
         ".tendermint.types.EvidenceParams.max_bytes",
         QUOTED_WITH_DEFAULT,
@@ -155,6 +158,7 @@ pub static CUSTOM_FIELD_ATTRIBUTES: &[(&str, &str)] = &[
     (".tendermint.types.Header.evidence_hash", HEXSTRING),
     (".tendermint.types.Header.proposer_address", HEXSTRING),
     (".tendermint.types.Data.txs", NULLABLEVECARRAY),
+    (".tendermint.types.Data.hash", HEXSTRING),
     (".tendermint.types.EvidenceList.evidence", NULLABLE),
     (".tendermint.types.Commit.height", QUOTED),
     (".tendermint.types.Commit.signatures", NULLABLE),
