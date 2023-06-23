@@ -205,7 +205,6 @@ pub struct Vote {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Commit {
     #[prost(int64, tag = "1")]
-    #[serde(with = "crate::serializers::from_str")]
     pub height: i64,
     #[prost(int32, tag = "2")]
     pub round: i32,

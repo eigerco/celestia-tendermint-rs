@@ -160,7 +160,6 @@ pub static CUSTOM_FIELD_ATTRIBUTES: &[(&str, &str)] = &[
     (".tendermint.types.Data.txs", NULLABLEVECARRAY),
     (".tendermint.types.Data.hash", HEXSTRING),
     (".tendermint.types.EvidenceList.evidence", NULLABLE),
-    (".tendermint.types.Commit.height", QUOTED),
     (".tendermint.types.Commit.signatures", NULLABLE),
     (".tendermint.types.CommitSig.validator_address", HEXSTRING),
     (".tendermint.types.CommitSig.timestamp", OPTIONAL),
