@@ -258,13 +258,12 @@ fn outgoing_fixtures() {
 fn incoming_fixtures() {
     use tendermint_rpc::dialect::v0_37::Event as RpcEvent;
 
-    let empty_merkle_root_hash = Some(
-        tendermint::Hash::from_hex_upper(
-            tendermint::hash::Algorithm::Sha256,
-            "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
-        )
-        .unwrap(),
-    );
+    let empty_merkle_root_hash = tendermint::Hash::from_hex_upper(
+        tendermint::hash::Algorithm::Sha256,
+        "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+    )
+    .unwrap();
+
     let informal_epoch =
         tendermint::Time::parse_from_rfc3339("2020-01-01T00:00:00.000000000Z").unwrap();
 
@@ -381,8 +380,8 @@ fn incoming_fixtures() {
                 assert_eq!(result.block.header.evidence_hash, empty_merkle_root_hash);
                 assert_eq!(result.block.header.height.value(), 10);
                 assert!(result.block.header.last_block_id.is_some());
-                assert!(result.block.header.last_commit_hash.is_some());
-                assert!(result.block.header.last_results_hash.is_some());
+                assert!(result.block.header.last_commit_hash.is_empty());
+                assert!(result.block.header.last_results_hash.is_empty());
                 assert!(!result.block.header.next_validators_hash.is_empty());
                 assert_ne!(
                     result.block.header.proposer_address.as_bytes(),
@@ -573,8 +572,8 @@ fn incoming_fixtures() {
                 );
                 assert_eq!(result.signed_header.header.height.value(), 10);
                 assert!(result.signed_header.header.last_block_id.is_some());
-                assert!(result.signed_header.header.last_commit_hash.is_some());
-                assert!(result.signed_header.header.last_results_hash.is_some());
+                assert!(result.signed_header.header.last_commit_hash.is_empty());
+                assert!(result.signed_header.header.last_results_hash.is_empty());
                 assert!(!result.signed_header.header.next_validators_hash.is_empty());
                 assert_ne!(
                     result.signed_header.header.proposer_address.as_bytes(),
@@ -743,11 +742,11 @@ fn incoming_fixtures() {
                         assert_eq!(block_meta.header.last_results_hash, empty_merkle_root_hash);
                     } else {
                         assert!(!block_meta.header.app_hash.as_bytes().is_empty());
-                        assert!(block_meta.header.data_hash.is_some());
-                        assert!(block_meta.header.evidence_hash.is_some());
+                        assert!(block_meta.header.data_hash.is_empty());
+                        assert!(block_meta.header.evidence_hash.is_empty());
                         assert!(block_meta.header.last_block_id.is_some());
-                        assert!(block_meta.header.last_commit_hash.is_some());
-                        assert!(block_meta.header.last_results_hash.is_some());
+                        assert!(block_meta.header.last_commit_hash.is_empty());
+                        assert!(block_meta.header.last_results_hash.is_empty());
                     }
                     assert_eq!(block_meta.header.chain_id.as_str(), CHAIN_ID);
                     assert!(!block_meta.header.consensus_hash.is_empty());
@@ -813,8 +812,8 @@ fn incoming_fixtures() {
                     assert_eq!(b.header.data_hash, empty_merkle_root_hash);
                     assert_eq!(b.header.evidence_hash, empty_merkle_root_hash);
                     assert!(b.header.last_block_id.is_some());
-                    assert!(b.header.last_commit_hash.is_some());
-                    assert!(b.header.last_results_hash.is_some());
+                    assert!(b.header.last_commit_hash.is_empty());
+                    assert!(b.header.last_results_hash.is_empty());
                     assert!(!b.header.next_validators_hash.is_empty());
                     assert_ne!(
                         b.header.proposer_address.as_bytes(),
@@ -869,8 +868,8 @@ fn incoming_fixtures() {
                     assert_eq!(b.header.data_hash, empty_merkle_root_hash);
                     assert_eq!(b.header.evidence_hash, empty_merkle_root_hash);
                     assert!(b.header.last_block_id.is_some());
-                    assert!(b.header.last_commit_hash.is_some());
-                    assert!(b.header.last_results_hash.is_some());
+                    assert!(b.header.last_commit_hash.is_empty());
+                    assert!(b.header.last_results_hash.is_empty());
                     assert!(!b.header.next_validators_hash.is_empty());
                     assert_ne!(
                         b.header.proposer_address.as_bytes(),
@@ -947,8 +946,8 @@ fn incoming_fixtures() {
                     assert_eq!(b.header.data_hash, empty_merkle_root_hash);
                     assert_eq!(b.header.evidence_hash, empty_merkle_root_hash);
                     assert!(b.header.last_block_id.is_some());
-                    assert!(b.header.last_commit_hash.is_some());
-                    assert!(b.header.last_results_hash.is_some());
+                    assert!(b.header.last_commit_hash.is_empty());
+                    assert!(b.header.last_results_hash.is_empty());
                     assert!(!b.header.next_validators_hash.is_empty());
                     assert_ne!(
                         b.header.proposer_address.as_bytes(),
@@ -1003,8 +1002,8 @@ fn incoming_fixtures() {
                     assert_eq!(b.header.data_hash, empty_merkle_root_hash);
                     assert_eq!(b.header.evidence_hash, empty_merkle_root_hash);
                     assert!(b.header.last_block_id.is_some());
-                    assert!(b.header.last_commit_hash.is_some());
-                    assert!(b.header.last_results_hash.is_some());
+                    assert!(b.header.last_commit_hash.is_empty());
+                    assert!(b.header.last_results_hash.is_empty());
                     assert!(!b.header.next_validators_hash.is_empty());
                     assert_ne!(
                         b.header.proposer_address.as_bytes(),
@@ -1059,8 +1058,8 @@ fn incoming_fixtures() {
                     assert_eq!(b.header.data_hash, empty_merkle_root_hash);
                     assert_eq!(b.header.evidence_hash, empty_merkle_root_hash);
                     assert!(b.header.last_block_id.is_some());
-                    assert!(b.header.last_commit_hash.is_some());
-                    assert!(b.header.last_results_hash.is_some());
+                    assert!(b.header.last_commit_hash.is_empty());
+                    assert!(b.header.last_results_hash.is_empty());
                     assert!(!b.header.next_validators_hash.is_empty());
                     assert_ne!(
                         b.header.proposer_address.as_bytes(),
