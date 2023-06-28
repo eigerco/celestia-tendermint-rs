@@ -179,14 +179,14 @@ impl Generator<block::Header> for Header {
                 .map_err(|_| SimpleError::new("height out of bounds"))?,
             time,
             last_block_id,
-            last_commit_hash: None,
-            data_hash: None,
+            last_commit_hash: Hash::None,
+            data_hash: Hash::None,
             validators_hash: valset.hash(),
             next_validators_hash: next_valset.hash(),
             consensus_hash: valset.hash(), // TODO: currently not clear how to produce a valid hash
             app_hash: AppHash::from_hex_upper("").unwrap(),
-            last_results_hash: None,
-            evidence_hash: None,
+            last_results_hash: Hash::None,
+            evidence_hash: Hash::None,
             proposer_address,
         };
         Ok(header)
