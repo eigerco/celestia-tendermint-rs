@@ -170,7 +170,7 @@ impl<'de> Deserialize<'de> for Hash {
         let hex = CowStr::deserialize(deserializer)?;
 
         if hex.is_empty() {
-            Err(D::Error::custom("empty hash"))
+            Ok(Hash::None)
         } else {
             Ok(Self::from_str(&hex).map_err(|e| D::Error::custom(format!("{e}")))?)
         }
