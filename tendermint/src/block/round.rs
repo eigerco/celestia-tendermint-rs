@@ -6,6 +6,7 @@ use core::{
 
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
 
 /// Block round for a particular chain
@@ -91,7 +92,7 @@ impl FromStr for Round {
 
 impl<'de> Deserialize<'de> for Round {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        Self::from_str(&String::deserialize(deserializer)?)
+        Self::from_str(&CowStr::deserialize(deserializer)?)
             .map_err(|e| D::Error::custom(format!("{e}")))
     }
 }

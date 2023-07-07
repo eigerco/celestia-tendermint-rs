@@ -70,8 +70,10 @@ fn deserialize_ed25519_keypair<'de, D>(deserializer: D) -> Result<Ed25519, D::Er
 where
     D: de::Deserializer<'de>,
 {
+    use crate::serializers::cow_str::CowStr;
     use de::Error;
-    let string = Zeroizing::new(String::deserialize(deserializer)?);
+
+    let string = CowStr::deserialize(deserializer)?;
     let mut keypair_bytes = Zeroizing::new([0u8; ED25519_KEYPAIR_SIZE]);
     let decoded_len = Base64::default()
         .decode_to_slice(string.as_bytes(), &mut *keypair_bytes)

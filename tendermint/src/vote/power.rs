@@ -7,6 +7,7 @@ use core::{
 
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
 
 /// Voting power
@@ -82,7 +83,7 @@ impl Power {
 impl<'de> Deserialize<'de> for Power {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         Ok(Power(
-            String::deserialize(deserializer)?
+            CowStr::deserialize(deserializer)?
                 .parse::<i64>()
                 .map_err(|e| D::Error::custom(format!("{e}")))?
                 .try_into()

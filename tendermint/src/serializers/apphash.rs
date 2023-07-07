@@ -3,6 +3,7 @@
 use serde::{Deserialize, Deserializer, Serializer};
 use subtle_encoding::hex;
 
+use crate::serializers::cow_str::CowStr;
 use crate::{prelude::*, AppHash};
 
 /// Deserialize hexstring into AppHash
@@ -10,8 +11,8 @@ pub fn deserialize<'de, D>(deserializer: D) -> Result<AppHash, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let hexstring: String = Option::<String>::deserialize(deserializer)?.unwrap_or_default();
-    AppHash::from_hex_upper(hexstring.as_str()).map_err(serde::de::Error::custom)
+    let hexstring = Option::<CowStr>::deserialize(deserializer)?.unwrap_or_default();
+    AppHash::from_hex_upper(&hexstring).map_err(serde::de::Error::custom)
 }
 
 /// Serialize from AppHash into hexstring

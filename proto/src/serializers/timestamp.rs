@@ -7,6 +7,7 @@ use time::{
     format_description::well_known::Rfc3339 as Rfc3339Format, macros::offset, OffsetDateTime,
 };
 
+use crate::serializers::cow_str::CowStr;
 use crate::{google::protobuf::Timestamp, prelude::*};
 
 /// Helper struct to serialize and deserialize Timestamp into an RFC3339-compatible string
@@ -32,7 +33,7 @@ pub fn deserialize<'de, D>(deserializer: D) -> Result<Timestamp, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let value_string = String::deserialize(deserializer)?;
+    let value_string = CowStr::deserialize(deserializer)?;
     let t = OffsetDateTime::parse(&value_string, &Rfc3339Format).map_err(D::Error::custom)?;
     let t = t.to_offset(offset!(UTC));
     if !matches!(t.year(), 1..=9999) {

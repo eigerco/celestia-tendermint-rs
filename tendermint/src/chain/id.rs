@@ -11,6 +11,7 @@ use core::{
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 use tendermint_proto::Protobuf;
 
+use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
 
 /// Maximum length of a `chain::Id` name. Matches `MaxChainIDLen` from:
@@ -129,7 +130,7 @@ impl Serialize for Id {
 
 impl<'de> Deserialize<'de> for Id {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        Self::from_str(&String::deserialize(deserializer)?)
+        Self::from_str(&CowStr::deserialize(deserializer)?)
             .map_err(|e| D::Error::custom(format!("{e}")))
     }
 }
