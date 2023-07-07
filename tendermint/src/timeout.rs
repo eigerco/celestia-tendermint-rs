@@ -2,6 +2,7 @@ use core::{fmt, ops::Deref, str::FromStr, time::Duration};
 
 use serde::{de, de::Error as _, ser, Deserialize, Serialize};
 
+use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
 
 /// Timeout durations
@@ -68,10 +69,10 @@ impl fmt::Display for Timeout {
 impl<'de> Deserialize<'de> for Timeout {
     /// Parse `Timeout` from string ending in `s` or `ms`
     fn deserialize<D: de::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let string = String::deserialize(deserializer)?;
+        let string = CowStr::deserialize(deserializer)?;
         string
             .parse()
-            .map_err(|_| D::Error::custom(format!("invalid timeout value: {:?}", &string)))
+            .map_err(|_| D::Error::custom(format!("invalid timeout value: {:?}", string)))
     }
 }
 

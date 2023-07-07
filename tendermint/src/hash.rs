@@ -11,6 +11,7 @@ use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 use subtle_encoding::{Encoding, Hex};
 use tendermint_proto::Protobuf;
 
+use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
 
 /// Output size for the SHA-256 hash function
@@ -166,12 +167,12 @@ impl FromStr for Hash {
 
 impl<'de> Deserialize<'de> for Hash {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let hex = <&str>::deserialize(deserializer)?;
+        let hex = CowStr::deserialize(deserializer)?;
 
         if hex.is_empty() {
             Err(D::Error::custom("empty hash"))
         } else {
-            Ok(Self::from_str(hex).map_err(|e| D::Error::custom(format!("{e}")))?)
+            Ok(Self::from_str(&hex).map_err(|e| D::Error::custom(format!("{e}")))?)
         }
     }
 }

@@ -4,6 +4,7 @@
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::prelude::*;
+use crate::serializers::cow_str::CowStr;
 
 /// Deserialize string into T
 pub fn deserialize<'de, D, T>(deserializer: D) -> Result<T, D::Error>
@@ -12,7 +13,7 @@ where
     T: core::str::FromStr,
     <T as core::str::FromStr>::Err: core::fmt::Display,
 {
-    String::deserialize(deserializer)?
+    CowStr::deserialize(deserializer)?
         .parse::<T>()
         .map_err(|e| D::Error::custom(format!("{e}")))
 }

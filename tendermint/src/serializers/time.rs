@@ -4,6 +4,7 @@
 
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::serializers::cow_str::CowStr;
 use crate::{prelude::*, Time};
 
 /// Serialize from `Time` into `String`
@@ -19,6 +20,6 @@ pub fn deserialize<'de, D>(deserializer: D) -> Result<Time, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let s = String::deserialize(deserializer)?;
+    let s = CowStr::deserialize(deserializer)?;
     Time::parse_from_rfc3339(&s).map_err(serde::de::Error::custom)
 }

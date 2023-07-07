@@ -9,6 +9,7 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use subtle::{self, ConstantTimeEq};
 use subtle_encoding::hex;
 
+use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
 
 /// Length of a Node ID in bytes
@@ -119,7 +120,7 @@ impl<'de> Deserialize<'de> for Id {
     where
         D: Deserializer<'de>,
     {
-        let s = String::deserialize(deserializer)?;
+        let s = CowStr::deserialize(deserializer)?;
         Self::from_str(&s).map_err(|_| {
             de::Error::custom(format!(
                 "expected {}-character hex string, got {:?}",

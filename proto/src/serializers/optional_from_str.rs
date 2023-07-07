@@ -5,6 +5,7 @@ use core::{fmt::Display, str::FromStr};
 use serde::{de::Error, Deserialize, Deserializer, Serializer};
 
 use crate::prelude::*;
+use crate::serializers::cow_str::CowStr;
 
 pub fn serialize<S, T>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
 where
@@ -23,7 +24,7 @@ where
     T: FromStr,
     T::Err: Display,
 {
-    let s = match Option::<String>::deserialize(deserializer)? {
+    let s = match Option::<CowStr>::deserialize(deserializer)? {
         Some(s) => s,
         None => return Ok(None),
     };

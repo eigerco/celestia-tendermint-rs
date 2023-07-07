@@ -16,6 +16,7 @@ use serde_json::Value;
 use subtle_encoding::{base64, bech32, hex};
 
 pub use crate::crypto::ed25519::VerificationKey as Ed25519;
+use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
 
 // Note:On the golang side this is generic in the sense that it could everything that implements
@@ -352,7 +353,7 @@ impl Serialize for Algorithm {
 impl<'de> Deserialize<'de> for Algorithm {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         use de::Error;
-        let s = String::deserialize(deserializer)?;
+        let s = CowStr::deserialize(deserializer)?;
         s.parse().map_err(D::Error::custom)
     }
 }
@@ -383,7 +384,7 @@ where
     D: Deserializer<'de>,
 {
     use de::Error;
-    let encoded = String::deserialize(deserializer)?;
+    let encoded = CowStr::deserialize(deserializer)?;
     let bytes = base64::decode(encoded).map_err(D::Error::custom)?;
     Ed25519::try_from(&bytes[..]).map_err(|_| D::Error::custom("invalid Ed25519 key"))
 }
@@ -394,7 +395,7 @@ where
     D: Deserializer<'de>,
 {
     use de::Error;
-    let encoded = String::deserialize(deserializer)?;
+    let encoded = CowStr::deserialize(deserializer)?;
     let bytes = base64::decode(encoded).map_err(D::Error::custom)?;
     Secp256k1::from_sec1_bytes(&bytes).map_err(|_| D::Error::custom("invalid secp256k1 key"))
 }
