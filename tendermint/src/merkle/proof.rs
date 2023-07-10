@@ -13,7 +13,7 @@ pub struct Proof {
     // Index of the item to prove.
     pub index: u64,
     // Hash of item value.
-    pub leaf_hash: Hash,
+    pub leaf_hash: Option<Hash>,
     // Hashes from leaf's sibling to a root's child.
     pub aunts: Vec<Hash>,
 }
@@ -49,6 +49,7 @@ pub struct ProofOp {
 
 tendermint_pb_modules! {
     use super::{Proof, ProofOp, ProofOps};
+    use crate::hash::{Hash, Algorithm};
     use crate::{prelude::*, Error};
     use pb::{
         crypto::{Proof as RawProof, ProofOp as RawProofOp, ProofOps as RawProofOps},
@@ -69,11 +70,11 @@ tendermint_pb_modules! {
                     .index
                     .try_into()
                     .map_err(Error::negative_proof_index)?,
-                leaf_hash: message.leaf_hash.try_into()?,
+                leaf_hash: Hash::from_bytes(Algorithm::Sha256, &message.leaf_hash)?,
                 aunts: message
                     .aunts
                     .into_iter()
-                    .map(TryInto::try_into)
+                    .filter_map(|bytes| Hash::from_bytes(Algorithm::Sha256, &bytes).transpose())
                     .collect::<Result<_, _>>()?,
             })
         }
@@ -87,7 +88,7 @@ tendermint_pb_modules! {
                     .try_into()
                     .expect("number of items is too large"),
                 index: value.index.try_into().expect("index is too large"),
-                leaf_hash: value.leaf_hash.into(),
+                leaf_hash: value.leaf_hash.map(Into::into).unwrap_or_default(),
                 aunts: value.aunts.into_iter().map(Into::into).collect(),
             }
         }

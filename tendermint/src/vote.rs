@@ -119,7 +119,7 @@ impl Vote {
 
     /// Returns block_id.hash
     pub fn header_hash(&self) -> Option<hash::Hash> {
-        self.block_id.map(|b| b.hash)
+        self.block_id.and_then(|b| b.hash)
     }
 
     /// Create signable bytes from Vote.

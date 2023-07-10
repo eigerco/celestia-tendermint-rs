@@ -39,28 +39,28 @@ pub struct Header {
     pub last_block_id: Option<block::Id>,
 
     /// Commit from validators from the last block
-    pub last_commit_hash: Hash,
+    pub last_commit_hash: Option<Hash>,
 
     /// Merkle root of transaction hashes
-    pub data_hash: Hash,
+    pub data_hash: Option<Hash>,
 
     /// Validators for the current block
-    pub validators_hash: Hash,
+    pub validators_hash: Option<Hash>,
 
     /// Validators for the next block
-    pub next_validators_hash: Hash,
+    pub next_validators_hash: Option<Hash>,
 
     /// Consensus params for the current block
-    pub consensus_hash: Hash,
+    pub consensus_hash: Option<Hash>,
 
     /// State after txs from the previous block
     pub app_hash: AppHash,
 
     /// Root hash of all results from the txs from the previous block
-    pub last_results_hash: Hash,
+    pub last_results_hash: Option<Hash>,
 
     /// Hash of evidence included in the block
-    pub evidence_hash: Hash,
+    pub evidence_hash: Option<Hash>,
 
     /// Original proposer of the block
     pub proposer_address: account::Id,
@@ -89,14 +89,14 @@ impl Header {
             self.height.encode_vec().unwrap(),
             self.time.encode_vec().unwrap(),
             Protobuf::<RawBlockId>::encode_vec(&self.last_block_id.unwrap_or_default()).unwrap(),
-            self.last_commit_hash.encode_vec().unwrap(),
-            self.data_hash.encode_vec().unwrap(),
-            self.validators_hash.encode_vec().unwrap(),
-            self.next_validators_hash.encode_vec().unwrap(),
-            self.consensus_hash.encode_vec().unwrap(),
+            encode_hash_to_vec(&self.last_commit_hash),
+            encode_hash_to_vec(&self.data_hash),
+            encode_hash_to_vec(&self.validators_hash),
+            encode_hash_to_vec(&self.next_validators_hash),
+            encode_hash_to_vec(&self.consensus_hash),
             self.app_hash.encode_vec().unwrap(),
-            self.last_results_hash.encode_vec().unwrap(),
-            self.evidence_hash.encode_vec().unwrap(),
+            encode_hash_to_vec(&self.last_results_hash),
+            encode_hash_to_vec(&self.evidence_hash),
             self.proposer_address.encode_vec().unwrap(),
         ];
 
@@ -117,6 +117,18 @@ pub struct Version {
     pub app: u64,
 }
 
+fn encode_hash_to_vec(hash: &Option<Hash>) -> Vec<u8> {
+    use prost::Message;
+
+    let data = hash.map(Vec::from).unwrap_or_default();
+    let len = data.encoded_len();
+
+    let mut buf = Vec::with_capacity(len);
+    data.encode(&mut buf).unwrap();
+
+    buf
+}
+
 // =============================================================================
 // Protobuf conversions
 // =============================================================================
@@ -124,6 +136,7 @@ pub struct Version {
 tendermint_pb_modules! {
     use super::{Header, Version};
     use crate::{block, Error};
+    use crate::hash::{Hash, Algorithm};
     use pb::{
         types::Header as RawHeader,
         version::Consensus as RawConsensusVersion,
@@ -177,14 +190,14 @@ tendermint_pb_modules! {
                     .ok_or_else(Error::missing_timestamp)?
                     .try_into()?,
                 last_block_id,
-                last_commit_hash: value.last_commit_hash.try_into()?,
-                data_hash: value.data_hash.try_into()?,
-                validators_hash: value.validators_hash.try_into()?,
-                next_validators_hash: value.next_validators_hash.try_into()?,
-                consensus_hash: value.consensus_hash.try_into()?,
+                last_commit_hash: Hash::from_bytes(Algorithm::Sha256, &value.last_commit_hash)?,
+                data_hash: Hash::from_bytes(Algorithm::Sha256, &value.data_hash)?,
+                validators_hash: Hash::from_bytes(Algorithm::Sha256, &value.validators_hash)?,
+                next_validators_hash: Hash::from_bytes(Algorithm::Sha256, &value.next_validators_hash)?,
+                consensus_hash: Hash::from_bytes(Algorithm::Sha256, &value.consensus_hash)?,
                 app_hash: value.app_hash.try_into()?,
-                last_results_hash: value.last_results_hash.try_into()?,
-                evidence_hash: value.evidence_hash.try_into()?, // Todo: Is it illegal to have evidence of wrongdoing in the first block?
+                last_results_hash: Hash::from_bytes(Algorithm::Sha256, &value.last_results_hash)?,
+                evidence_hash: Hash::from_bytes(Algorithm::Sha256, &value.evidence_hash)?, // Todo: Is it illegal to have evidence of wrongdoing in the first block?
                 proposer_address: value.proposer_address.try_into()?,
             })
         }
@@ -198,14 +211,14 @@ tendermint_pb_modules! {
                 height: value.height.into(),
                 time: Some(value.time.into()),
                 last_block_id: value.last_block_id.map(Into::into),
-                last_commit_hash: value.last_commit_hash.into(),
-                data_hash: value.data_hash.into(),
-                validators_hash: value.validators_hash.into(),
-                next_validators_hash: value.next_validators_hash.into(),
-                consensus_hash: value.consensus_hash.into(),
+                last_commit_hash: value.last_commit_hash.map(Into::into).unwrap_or_default(),
+                data_hash: value.data_hash.map(Into::into).unwrap_or_default(),
+                validators_hash: value.validators_hash.map(Into::into).unwrap_or_default(),
+                next_validators_hash: value.next_validators_hash.map(Into::into).unwrap_or_default(),
+                consensus_hash: value.consensus_hash.map(Into::into).unwrap_or_default(),
                 app_hash: value.app_hash.into(),
-                last_results_hash: value.last_results_hash.into(),
-                evidence_hash: value.evidence_hash.into(),
+                last_results_hash: value.last_results_hash.map(Into::into).unwrap_or_default(),
+                evidence_hash: value.evidence_hash.map(Into::into).unwrap_or_default(),
                 proposer_address: value.proposer_address.into(),
             }
         }
@@ -254,6 +267,7 @@ mod tests {
                 Algorithm::Sha256,
                 "F30A71F2409FB15AACAEDB6CC122DFA2525BEE9CAE521721B06BFDCA291B8D56",
             )
+            .unwrap()
             .unwrap();
             let header: Header = serde_json::from_str(include_str!(
                 "../../tests/support/serialization/block/header_with_known_hash.json"

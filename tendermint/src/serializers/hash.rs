@@ -4,7 +4,7 @@ use serde::{Deserialize, Deserializer, Serializer};
 use subtle_encoding::hex;
 
 use crate::serializers::cow_str::CowStr;
-use crate::{hash::Algorithm, prelude::*, Hash};
+use crate::{hash::Algorithm, prelude::*, Error, Hash};
 
 /// Deserialize hexstring into Hash
 pub fn deserialize<'de, D>(deserializer: D) -> Result<Hash, D::Error>
@@ -12,7 +12,10 @@ where
     D: Deserializer<'de>,
 {
     let hexstring = Option::<CowStr>::deserialize(deserializer)?.unwrap_or_default();
-    Hash::from_hex_upper(Algorithm::Sha256, &hexstring).map_err(serde::de::Error::custom)
+    Hash::from_hex_upper(Algorithm::Sha256, &hexstring)
+        .map_err(serde::de::Error::custom)?
+        .ok_or_else(Error::empty_hash)
+        .map_err(serde::de::Error::custom)
 }
 
 /// Serialize from Hash into hexstring

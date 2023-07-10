@@ -34,7 +34,7 @@ pub const PREFIX_LENGTH: usize = 10;
 pub struct Id {
     /// The block's main hash is the Merkle root of all the fields in the
     /// block header.
-    pub hash: Hash,
+    pub hash: Option<Hash>,
 
     /// Parts header (if available) is used for secure gossipping of the block
     /// during consensus. It is the Merkle root of the complete serialized block
@@ -64,6 +64,7 @@ tendermint_pb_modules! {
     };
     use super::Id;
     use crate::{prelude::*, Error};
+    use crate::hash::{Hash, Algorithm};
 
     impl Protobuf<RawBlockId> for Id {}
 
@@ -77,7 +78,7 @@ tendermint_pb_modules! {
                 ));
             }
             Ok(Self {
-                hash: value.hash.try_into()?,
+                hash: Hash::from_bytes(Algorithm::Sha256, &value.hash)?,
                 part_set_header: value.part_set_header.unwrap().try_into()?,
             })
         }
@@ -99,7 +100,7 @@ tendermint_pb_modules! {
                 }
             } else {
                 RawBlockId {
-                    hash: value.hash.into(),
+                    hash: value.hash.map(Vec::from).unwrap_or_default(),
                     part_set_header: Some(value.part_set_header.into()),
                 }
             }
@@ -116,7 +117,7 @@ tendermint_pb_modules! {
                 ));
             }
             Ok(Self {
-                hash: value.hash.try_into()?,
+                hash: Hash::from_bytes(Algorithm::Sha256, &value.hash)?,
                 part_set_header: value.part_set_header.unwrap().try_into()?,
             })
         }
@@ -125,7 +126,7 @@ tendermint_pb_modules! {
     impl From<Id> for RawCanonicalBlockId {
         fn from(value: Id) -> Self {
             RawCanonicalBlockId {
-                hash: value.hash.as_bytes().to_vec(),
+                hash: value.hash.map(Vec::from).unwrap_or_default(),
                 part_set_header: Some(value.part_set_header.into()),
             }
         }
@@ -144,7 +145,10 @@ impl Id {
 // TODO: match gaia serialization? e.g `D2F5991B98D708FD2C25AA2BEBED9358F24177DE:1:C37A55FB95E9`
 impl Display for Id {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", &self.hash)
+        if let Some(ref hash) = self.hash {
+            write!(f, "{}", &hash)?;
+        }
+        Ok(())
     }
 }
 
@@ -177,7 +181,7 @@ mod tests {
     fn parses_hex_strings() {
         let id = Id::from_str(EXAMPLE_SHA256_ID).unwrap();
         assert_eq!(
-            id.hash.as_bytes(),
+            id.hash.unwrap().as_bytes(),
             b"\x26\xC0\xA4\x1F\x32\x43\xC6\xBC\xD7\xAD\x2D\xFF\x8A\x8D\x83\xA7\
               \x1D\x29\xD3\x07\xB5\x32\x6C\x22\x7F\x73\x4A\x1A\x51\x2F\xE4\x7D"
                 .as_ref()

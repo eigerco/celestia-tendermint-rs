@@ -25,34 +25,16 @@ pub enum Algorithm {
 }
 
 /// Hash digests
-#[derive(Copy, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, Default)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum Hash {
     /// SHA-256 hashes
     Sha256([u8; SHA256_HASH_SIZE]),
-    /// Empty hash
-    #[default]
-    None,
-}
-
-impl Protobuf<Vec<u8>> for Hash {}
-
-/// Default conversion from `Vec<u8>` is SHA256 Hash or `None`
-impl TryFrom<Vec<u8>> for Hash {
-    type Error = Error;
-
-    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
-        if value.is_empty() {
-            return Ok(Hash::None);
-        }
-        Hash::from_bytes(Algorithm::Sha256, &value)
-    }
 }
 
 impl From<Hash> for Vec<u8> {
     fn from(value: Hash) -> Self {
         match value {
             Hash::Sha256(s) => s.to_vec(),
-            Hash::None => vec![],
         }
     }
 }
@@ -61,7 +43,6 @@ impl AsRef<[u8]> for Hash {
     fn as_ref(&self) -> &[u8] {
         match self {
             Hash::Sha256(ref h) => h.as_ref(),
-            Hash::None => &[],
         }
     }
 }
@@ -72,26 +53,18 @@ impl From<Hash> for Bytes {
     }
 }
 
-impl TryFrom<Bytes> for Hash {
-    type Error = Error;
-
-    fn try_from(value: Bytes) -> Result<Self, Self::Error> {
-        Self::from_bytes(Algorithm::Sha256, value.as_ref())
-    }
-}
-
 impl Hash {
     /// Create a new `Hash` with the given algorithm type
-    pub fn from_bytes(alg: Algorithm, bytes: &[u8]) -> Result<Hash, Error> {
+    pub fn from_bytes(alg: Algorithm, bytes: &[u8]) -> Result<Option<Hash>, Error> {
         if bytes.is_empty() {
-            return Ok(Hash::None);
+            return Ok(None);
         }
         match alg {
             Algorithm::Sha256 => {
                 if bytes.len() == SHA256_HASH_SIZE {
                     let mut h = [0u8; SHA256_HASH_SIZE];
                     h.copy_from_slice(bytes);
-                    Ok(Hash::Sha256(h))
+                    Ok(Some(Hash::Sha256(h)))
                 } else {
                     Err(Error::invalid_hash_size())
                 }
@@ -100,9 +73,9 @@ impl Hash {
     }
 
     /// Decode a `Hash` from upper-case hexadecimal
-    pub fn from_hex_upper(alg: Algorithm, s: &str) -> Result<Hash, Error> {
+    pub fn from_hex_upper(alg: Algorithm, s: &str) -> Result<Option<Hash>, Error> {
         if s.is_empty() {
-            return Ok(Hash::None);
+            return Ok(None);
         }
         match alg {
             Algorithm::Sha256 => {
@@ -110,7 +83,7 @@ impl Hash {
                 Hex::upper_case()
                     .decode_to_slice(s.as_bytes(), &mut h)
                     .map_err(Error::subtle_encoding)?;
-                Ok(Hash::Sha256(h))
+                Ok(Some(Hash::Sha256(h)))
             },
         }
     }
@@ -119,7 +92,6 @@ impl Hash {
     pub fn algorithm(self) -> Algorithm {
         match self {
             Hash::Sha256(_) => Algorithm::Sha256,
-            Hash::None => Algorithm::Sha256,
         }
     }
 
@@ -127,13 +99,7 @@ impl Hash {
     pub fn as_bytes(&self) -> &[u8] {
         match self {
             Hash::Sha256(ref h) => h.as_ref(),
-            Hash::None => &[],
         }
-    }
-
-    /// Convenience function to check for Hash::None
-    pub fn is_empty(&self) -> bool {
-        self == &Hash::None
     }
 }
 
@@ -141,7 +107,6 @@ impl Debug for Hash {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Hash::Sha256(_) => write!(f, "Hash::Sha256({self})"),
-            Hash::None => write!(f, "Hash::None"),
         }
     }
 }
@@ -150,7 +115,6 @@ impl Display for Hash {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let hex = match self {
             Hash::Sha256(ref h) => Hex::upper_case().encode_to_string(h).unwrap(),
-            Hash::None => String::new(),
         };
 
         write!(f, "{hex}")
@@ -161,19 +125,14 @@ impl FromStr for Hash {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Error> {
-        Self::from_hex_upper(Algorithm::Sha256, s)
+        Self::from_hex_upper(Algorithm::Sha256, s)?.ok_or_else(Error::empty_hash)
     }
 }
 
 impl<'de> Deserialize<'de> for Hash {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let hex = CowStr::deserialize(deserializer)?;
-
-        if hex.is_empty() {
-            Ok(Hash::None)
-        } else {
-            Ok(Self::from_str(&hex).map_err(|e| D::Error::custom(format!("{e}")))?)
-        }
+        Self::from_str(&hex).map_err(|e| D::Error::custom(format!("{e}")))
     }
 }
 

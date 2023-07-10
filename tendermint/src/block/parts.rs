@@ -16,7 +16,7 @@ pub struct Header {
     pub total: u32,
 
     /// Hash of the parts set header,
-    pub hash: Hash,
+    pub hash: Option<Hash>,
 }
 
 tendermint_pb_modules! {
@@ -51,7 +51,7 @@ tendermint_pb_modules! {
         fn from(value: Header) -> Self {
             RawPartSetHeader {
                 total: value.total,
-                hash: value.hash.into(),
+                hash: value.hash.map(Vec::from).unwrap_or_default(),
             }
         }
     }
@@ -74,7 +74,7 @@ tendermint_pb_modules! {
         fn from(value: Header) -> Self {
             RawCanonicalPartSetHeader {
                 total: value.total,
-                hash: value.hash.into(),
+                hash: value.hash.map(Vec::from).unwrap_or_default(),
             }
         }
     }
@@ -82,13 +82,13 @@ tendermint_pb_modules! {
 
 impl Header {
     /// constructor
-    pub fn new(total: u32, hash: Hash) -> Result<Self, Error> {
-        if total == 0 && hash != Hash::None {
+    pub fn new(total: u32, hash: Option<Hash>) -> Result<Self, Error> {
+        if total == 0 && hash.is_some() {
             return Err(Error::invalid_part_set_header(
                 "zero total with existing hash".to_string(),
             ));
         }
-        if total != 0 && hash == Hash::None {
+        if total != 0 && hash.is_none() {
             return Err(Error::invalid_part_set_header(
                 "non-zero total with empty hash".to_string(),
             ));

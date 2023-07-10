@@ -68,6 +68,9 @@ define_error! {
         InvalidHashSize
             |_| { format_args!("invalid hash: expected hash size to be 32 bytes") },
 
+        EmptyHash
+            |_| { format_args!("empty hash") },
+
         NonZeroTimestamp
             | _ | { "absent commitsig has non-zero timestamp" },
 

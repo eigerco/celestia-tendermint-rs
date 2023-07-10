@@ -1,16 +1,18 @@
 //! `Option<Hash>` serialization with validation
 
-use serde::{Deserializer, Serializer};
+use serde::{Deserialize, Deserializer, Serializer};
 
 use super::hash;
-use crate::Hash;
+use crate::hash::{Algorithm, Hash};
+use crate::serializers::cow_str::CowStr;
 
 /// Deserialize hexstring into `Option<Hash>`
 pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Hash>, D::Error>
 where
     D: Deserializer<'de>,
 {
-    hash::deserialize(deserializer).map(Some)
+    let hexstring = Option::<CowStr>::deserialize(deserializer)?.unwrap_or_default();
+    Hash::from_hex_upper(Algorithm::Sha256, &hexstring).map_err(serde::de::Error::custom)
 }
 
 /// Serialize from `Option<Hash>` into hexstring

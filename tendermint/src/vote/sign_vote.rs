@@ -124,10 +124,12 @@ mod tests {
             round: Round::from(2_u16),
             timestamp: Some(dt.try_into().unwrap()),
             block_id: Some(BlockId {
-                hash: Hash::try_from(b"DEADBEEFDEADBEEFBAFBAFBAFBAFBAFA".to_vec()).unwrap(),
+                hash: Hash::from_bytes(Algorithm::Sha256, b"DEADBEEFDEADBEEFBAFBAFBAFBAFBAFA")
+                    .unwrap(),
                 part_set_header: Header::new(
                     1_000_000,
-                    Hash::try_from(b"0022446688AACCEE1133557799BBDDFF".to_vec()).unwrap(),
+                    Hash::from_bytes(Algorithm::Sha256, b"0022446688AACCEE1133557799BBDDFF")
+                        .unwrap(),
                 )
                 .unwrap(),
             }),
@@ -208,10 +210,11 @@ mod tests {
             round: Round::from(2_u16),
             timestamp: Some(dt.try_into().unwrap()),
             block_id: Some(BlockId {
-                hash: Hash::try_from(b"".to_vec()).unwrap(),
+                hash: None,
                 part_set_header: Header::new(
                     1_000_000,
-                    Hash::try_from(b"0022446688AACCEE1133557799BBDDFF".to_vec()).unwrap(),
+                    Hash::from_bytes(Algorithm::Sha256, b"0022446688AACCEE1133557799BBDDFF")
+                        .unwrap(),
                 )
                 .unwrap(),
             }),

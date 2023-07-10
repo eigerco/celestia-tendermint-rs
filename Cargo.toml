@@ -1,28 +1,28 @@
 [workspace]
 
 members = [
-    "abci",
-    "config",
-    "light-client",
-    "light-client-verifier",
-    "light-client-detector",
-    "light-client-cli",
-    "light-client-js",
-    "p2p",
     "pbt-gen",
     "proto",
-    "rpc",
-    "std-ext",
     "tendermint",
-    "test",
-    "testgen"
+    "tools/proto-compiler",
 ]
 
 exclude = [
-    "proto-compiler",
-    "tools/no-std-check"
+    "abci",
+    "config",
+    "light-client",
+    "light-client-cli",
+    "light-client-detector",
+    "light-client-js",
+    "light-client-verifier",
+    "p2p",
+    "rpc",
+    "std-ext",
+    "test",
+    "testgen",
+    "tools/no-std-check",
 ]
 
-[profile.release.package.tendermint-light-client-js]
+#[profile.release.package.tendermint-light-client-js]
 # Tell `rustc` to optimize for small code size.
-opt-level = "s"
+#opt-level = "s"

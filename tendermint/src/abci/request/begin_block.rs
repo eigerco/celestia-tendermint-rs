@@ -14,7 +14,7 @@ pub struct BeginBlock {
     /// The block's hash.
     ///
     /// This can be derived from the block header.
-    pub hash: Hash,
+    pub hash: Option<Hash>,
     /// The block header.
     pub header: block::Header,
     /// Information about the last commit.
@@ -32,12 +32,13 @@ pub struct BeginBlock {
 
 tendermint_pb_modules! {
     use super::BeginBlock;
+    use crate::hash::{Hash, Algorithm};
     use crate::Error;
 
     impl From<BeginBlock> for pb::abci::RequestBeginBlock {
         fn from(begin_block: BeginBlock) -> Self {
             Self {
-                hash: begin_block.hash.into(),
+                hash: begin_block.hash.map(Into::into).unwrap_or_default(),
                 header: Some(begin_block.header.into()),
                 last_commit_info: Some(begin_block.last_commit_info.into()),
                 byzantine_validators: begin_block
@@ -54,7 +55,7 @@ tendermint_pb_modules! {
 
         fn try_from(begin_block: pb::abci::RequestBeginBlock) -> Result<Self, Self::Error> {
             Ok(Self {
-                hash: begin_block.hash.try_into()?,
+                hash: Hash::from_bytes(Algorithm::Sha256, &begin_block.hash)?,
                 header: begin_block
                     .header
                     .ok_or_else(Error::missing_header)?

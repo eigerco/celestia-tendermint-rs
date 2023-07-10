@@ -149,16 +149,20 @@ mod tests {
             round: block::Round::from(1_u16),
             step: 6,
             block_id: Some(block::Id {
-                hash: Hash::from_str(
-                    "1234567890123456789012345678901234567890123456789012345678901234",
-                )
-                .unwrap(),
-                part_set_header: block::parts::Header::new(
-                    1,
+                hash: Some(
                     Hash::from_str(
                         "1234567890123456789012345678901234567890123456789012345678901234",
                     )
                     .unwrap(),
+                ),
+                part_set_header: block::parts::Header::new(
+                    1,
+                    Some(
+                        Hash::from_str(
+                            "1234567890123456789012345678901234567890123456789012345678901234",
+                        )
+                        .unwrap(),
+                    ),
                 )
                 .unwrap(),
             }),
