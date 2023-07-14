@@ -96,6 +96,8 @@ pub static CUSTOM_TYPE_ATTRIBUTES: &[(&str, &str)] = &[
     (".tendermint.types.ValidatorSet", SERIALIZED),
     (".tendermint.crypto.PublicKey.sum", SERIALIZED),
     (".tendermint.crypto.PublicKey.sum", TYPE_TAG),
+    (".tendermint.abci.Event", SERIALIZED),
+    (".tendermint.abci.EventAttribute", SERIALIZED),
     (".tendermint.abci.ResponseInfo", SERIALIZED),
     (".tendermint.types.CanonicalBlockID", SERIALIZED),
     (".tendermint.types.CanonicalPartSetHeader", SERIALIZED),
