@@ -5,6 +5,7 @@ mod power;
 mod sign_vote;
 mod validator_index;
 
+use core::convert::Infallible;
 use core::{fmt, str::FromStr};
 
 use bytes::BufMut;
@@ -139,7 +140,9 @@ impl Vote {
     /// Create signable vector from Vote.
     pub fn to_signable_vec(&self, chain_id: ChainId) -> Result<Vec<u8>, ProtobufError> {
         let canonical = CanonicalVote::new(self.clone(), chain_id);
-        Protobuf::<RawCanonicalVote>::encode_length_delimited_vec(&canonical)
+        let encoded: Result<_, Infallible> =
+            Protobuf::<RawCanonicalVote>::encode_length_delimited_vec(&canonical);
+        Ok(encoded.unwrap())
     }
 
     /// Consensus state from this vote - This doesn't seem to be used anywhere.

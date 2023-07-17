@@ -4,6 +4,8 @@ mod canonical_proposal;
 mod msg_type;
 mod sign_proposal;
 
+use core::convert::Infallible;
+
 use bytes::BufMut;
 pub use msg_type::Type;
 pub use sign_proposal::{SignProposalRequest, SignedProposalResponse};
@@ -101,7 +103,9 @@ impl Proposal {
     /// Create signable vector from Proposal.
     pub fn to_signable_vec(&self, chain_id: ChainId) -> Result<Vec<u8>, ProtobufError> {
         let canonical = CanonicalProposal::new(self.clone(), chain_id);
-        Protobuf::<RawCanonicalProposal>::encode_length_delimited_vec(&canonical)
+        let encoded: Result<_, Infallible> =
+            Protobuf::<RawCanonicalProposal>::encode_length_delimited_vec(&canonical);
+        Ok(encoded.unwrap())
     }
 
     /// Consensus state from this proposal - This doesn't seem to be used anywhere.
