@@ -44,8 +44,8 @@ mod v0_34 {
         fn try_from(message: pb::ResponseProcessProposal) -> Result<Self, Self::Error> {
             use pb::response_process_proposal::Result;
 
-            let result = Result::from_i32(message.result)
-                .ok_or_else(Error::unsupported_process_proposal_result)?;
+            let result = Result::try_from(message.result)
+                .map_err(|_| Error::unsupported_process_proposal_result())?;
 
             let result = match result {
                 Result::Unknown => ProcessProposalResult::Unknown,
