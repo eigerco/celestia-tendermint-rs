@@ -27,7 +27,7 @@ pub mod hexstring {
     {
         let hex_bytes = hex::encode_upper(value.as_ref());
         let hex_string = String::from_utf8(hex_bytes).map_err(serde::ser::Error::custom)?;
-        serializer.serialize_str(&hex_string)
+        serializer.serialize_some(&hex_string)
     }
 }
 
@@ -68,7 +68,7 @@ pub mod base64string {
     {
         let base64_bytes = base64::encode(value.as_ref());
         let base64_string = String::from_utf8(base64_bytes).map_err(serde::ser::Error::custom)?;
-        serializer.serialize_str(&base64_string)
+        serializer.serialize_some(&base64_string)
     }
 }
 
@@ -104,7 +104,7 @@ pub mod vec_base64string {
                 String::from_utf8(base64::encode(v.as_ref())).map_err(serde::ser::Error::custom)
             })
             .collect::<Result<Vec<String>, S::Error>>()?;
-        serializer.collect_seq(base64_strings)
+        serializer.serialize_some(&base64_strings)
     }
 }
 
@@ -133,7 +133,7 @@ pub mod option_base64string {
     {
         let base64_bytes = base64::encode(value.as_ref());
         let base64_string = String::from_utf8(base64_bytes).map_err(serde::ser::Error::custom)?;
-        serializer.serialize_str(&base64_string)
+        serializer.serialize_some(&base64_string)
     }
 }
 
@@ -163,6 +163,6 @@ pub mod string {
         T: AsRef<[u8]>,
     {
         let string = str::from_utf8(value.as_ref()).map_err(serde::ser::Error::custom)?;
-        serializer.serialize_str(string)
+        serializer.serialize_some(string)
     }
 }
