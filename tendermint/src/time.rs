@@ -8,8 +8,6 @@ use core::{
     time::Duration,
 };
 
-#[cfg(target_arch = "wasm32")]
-use instant::SystemTime;
 use serde::{Deserialize, Serialize};
 use tendermint_proto::{google::protobuf::Timestamp, serializers::timestamp, Protobuf};
 use time::{
@@ -66,14 +64,9 @@ impl From<Time> for Timestamp {
 }
 
 impl Time {
-    #[cfg(all(feature = "clock", not(target_arch = "wasm32")))]
+    #[cfg(any(feature = "clock"))]
     pub fn now() -> Time {
         OffsetDateTime::now_utc().try_into().unwrap()
-    }
-
-    #[cfg(all(feature = "clock", target_arch = "wasm32"))]
-    pub fn now() -> Time {
-        SystemTime::now().try_into().unwrap()
     }
 
     // Internal helper to produce a `Time` value validated with regard to
@@ -185,25 +178,6 @@ impl TryFrom<OffsetDateTime> for Time {
 impl From<Time> for OffsetDateTime {
     fn from(t: Time) -> OffsetDateTime {
         t.0.assume_utc()
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-impl TryFrom<SystemTime> for Time {
-    type Error = Error;
-
-    fn try_from(t: SystemTime) -> Result<Time, Self::Error> {
-        let since_epoch = t
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .map_err(|_| Error::date_out_of_range())?;
-
-        Time::from_unix_timestamp(
-            since_epoch
-                .as_secs()
-                .try_into()
-                .map_err(|_| Error::date_out_of_range())?,
-            since_epoch.subsec_nanos(),
-        )
     }
 }
 
