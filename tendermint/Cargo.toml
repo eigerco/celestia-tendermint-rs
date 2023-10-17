@@ -53,10 +53,13 @@ sha2 = { version = "0.10", optional = true, default-features = false }
 k256 = { version = "0.13", optional = true, default-features = false, features = ["alloc", "ecdsa"] }
 ripemd = { version = "0.1.3", optional = true, default-features = false }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+instant = { version = "0.1", features = [ "wasm-bindgen" ], optional = true}
+
 [features]
 default = ["std", "rust-crypto"]
 std = ["flex-error/std", "flex-error/eyre_tracer", "clock"]
-clock = ["time/std"]
+clock = ["time/std", "dep:instant"]
 secp256k1 = ["k256", "ripemd"]
 rust-crypto = ["sha2", "ed25519-consensus"]
 
