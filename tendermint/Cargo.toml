@@ -62,6 +62,7 @@ std = ["flex-error/std", "flex-error/eyre_tracer", "clock"]
 clock = ["time/std", "dep:instant"]
 secp256k1 = ["k256", "ripemd"]
 rust-crypto = ["sha2", "ed25519-consensus"]
+wasm-bindgen = ["instant/wasm-bindgen"]
 
 [dev-dependencies]
 k256 = { version = "0.13", default-features = false, features = ["ecdsa"] }
