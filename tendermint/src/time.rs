@@ -8,7 +8,7 @@ use core::{
     time::Duration,
 };
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(feature = "clock", target_arch = "wasm32", feature = "wasm-bindgen"))]
 use instant::SystemTime;
 use serde::{Deserialize, Serialize};
 use tendermint_proto::{google::protobuf::Timestamp, serializers::timestamp, Protobuf};
@@ -71,7 +71,7 @@ impl Time {
         OffsetDateTime::now_utc().try_into().unwrap()
     }
 
-    #[cfg(all(feature = "clock", target_arch = "wasm32"))]
+    #[cfg(all(feature = "clock", target_arch = "wasm32", feature = "wasm-bindgen"))]
     pub fn now() -> Time {
         SystemTime::now().try_into().unwrap()
     }
@@ -188,7 +188,7 @@ impl From<Time> for OffsetDateTime {
     }
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(feature = "clock", target_arch = "wasm32", feature = "wasm-bindgen"))]
 impl TryFrom<SystemTime> for Time {
     type Error = Error;
 
