@@ -15,6 +15,9 @@ description = """
     Implementation of the Tendermint Light Client CLI.
 """
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 # docs.rs-specific configuration
 [package.metadata.docs.rs]
 # document all features

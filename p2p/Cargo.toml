@@ -19,6 +19,9 @@ description = """
     The Tendermint P2P stack in Rust.
     """
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 [lib]
 test = false
 

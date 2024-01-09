@@ -20,6 +20,9 @@ description = """
     cases where only the core types are needed.
     """
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 [package.metadata.docs.rs]
 all-features = true
 

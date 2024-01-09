@@ -19,6 +19,9 @@ authors = [
     "Informal Systems <hello@informal.systems>",
 ]
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
