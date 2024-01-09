@@ -2,7 +2,8 @@ name: no_std check
 on:
   pull_request: {}
   push:
-    branches: main
+    branches:
+      - 'v*.*.*-celestia'
 
 jobs:
   check-no-std-panic-conflict:
