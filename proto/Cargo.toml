@@ -1,5 +1,5 @@
 [package]
-name       = "tendermint-proto"
+name       = "celestia-tendermint-proto"
 version    = "0.32.0"
 authors    = ["Informal Systems <hello@informal.systems>"]
 edition    = "2021"
@@ -10,6 +10,7 @@ categories = ["cryptography", "cryptography::cryptocurrencies", "database"]
 keywords   = ["blockchain", "tendermint", "proto"]
 
 description = """
+    This is a hard fork of tendermint to make it compatible with Celestia network.
     tendermint-proto is a the Rust implementation of the Tendermint proto structs.
     """
 
