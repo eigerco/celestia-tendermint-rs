@@ -9,6 +9,33 @@ on:
     branches:
       - 'v*.*.*-celestia'
 jobs:
+  # As per https://github.com/informalsystems/tendermint-rs/issues/1014
+  generated-protos-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install protoc
+        run: |
+          curl -Lo /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v21.4/protoc-21.4-linux-x86_64.zip
+          unzip /tmp/protoc.zip -d ${HOME}/.local
+          echo "PROTOC=${HOME}/.local/bin/protoc" >> $GITHUB_ENV
+          export PATH="${PATH}:${HOME}/.local/bin"
+
+      - name: Install buf
+        run: |
+          curl -sSL https://github.com/bufbuild/buf/releases/download/v1.15.1/buf-Linux-x86_64 \
+            -o /usr/local/bin/buf
+          chmod +x /usr/local/bin/buf
+
+      - name: Regenerate proto definitions
+        working-directory: ./tools/proto-compiler/
+        run: cargo run
+
+      - name: Ensure that generated proto builds
+        run: cargo build
+
   # cleanup-runs:
   #   runs-on: ubuntu-latest
   #   steps:
@@ -16,18 +43,6 @@ jobs:
   #       env:
   #         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
   #   if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
-
-  tendermint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build-all
 
   # build-light-client-wasm:
   #   runs-on: ubuntu-latest
@@ -56,31 +71,3 @@ jobs:
   #     - uses: actions-rs/cargo@v1
   #       with:
   #         command: build-tools
-
-  # As per https://github.com/informalsystems/tendermint-rs/issues/1014
-  generated-protos-compile:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - name: Install protoc
-        run: |
-          curl -Lo /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v21.4/protoc-21.4-linux-x86_64.zip
-          unzip /tmp/protoc.zip -d ${HOME}/.local
-          echo "PROTOC=${HOME}/.local/bin/protoc" >> $GITHUB_ENV
-          export PATH="${PATH}:${HOME}/.local/bin"
-      - name: Install buf
-        run: |
-          curl -sSL https://github.com/bufbuild/buf/releases/download/v1.15.1/buf-Linux-x86_64 \
-            -o /usr/local/bin/buf
-          chmod +x /usr/local/bin/buf
-      - name: Regenerate proto definitions
-        working-directory: ./tools/proto-compiler/
-        run: cargo run
-      - name: Ensure that generated proto definitions compile
-        uses: actions-rs/cargo@v1
-        with:
-          command: build-all
