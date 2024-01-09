@@ -1,5 +1,5 @@
 [package]
-name       = "tendermint"
+name       = "celestia-tendermint"
 version    = "0.32.0" # Also update depending crates (rpc, light-node, etc..) when bumping this .
 license    = "Apache-2.0"
 homepage   = "https://www.tendermint.com/"
@@ -10,6 +10,7 @@ keywords   = ["blockchain", "bft", "consensus", "cosmos", "tendermint"]
 edition    = "2021"
 
 description = """
+    This is a hard fork of tendermint to make it compatible with Celestia network.
     Tendermint is a high-performance blockchain consensus engine that powers
     Byzantine fault tolerant applications written in any programming language.
     This crate provides core types for representing information about Tendermint

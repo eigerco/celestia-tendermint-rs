@@ -1,4 +1,4 @@
-# tendermint-rs
+# celestia-tendermint-rs
 
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
@@ -8,6 +8,8 @@
 ![Rust Stable][rustc-image]
 
 [Tendermint] in Rust with [TLA+ specifications](/docs/spec).
+
+**This is a hard fork of tendermint to make it work with Celestia**
 
 Tendermint is a high-performance blockchain consensus engine for Byzantine fault
 tolerant applications written in any programming language.
