@@ -21,13 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test
+        run: cargo test
 
   # TODO(shonfeder): remove duplication once GitHub addresses one of these
   #  - https://github.community/t/support-for-yaml-anchors/16128/15
@@ -37,14 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test-all-features
-          args: -p celestia-tendermint
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test all features
+        run: cargo test --all-features -p celestia-tendermint
 
   # tendermint-rpc:
   #   runs-on: ubuntu-latest
@@ -63,14 +54,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test-all-features
-          args: -p celestia-tendermint-proto
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test all features
+        run: cargo test --all-features -p celestia-tendermint-proto
 
   # tendermint-light-client:
   #   runs-on: ubuntu-latest
