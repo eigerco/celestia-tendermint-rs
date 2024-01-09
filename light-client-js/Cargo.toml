@@ -13,6 +13,9 @@ description = """
     the Tendermint Light Client's verification functionality.
     """
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 

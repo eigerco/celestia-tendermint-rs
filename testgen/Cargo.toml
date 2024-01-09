@@ -15,6 +15,9 @@ description = """
     The library also contains some functionality to simplify running test batches.
     """
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 [dependencies]
 tendermint = { version = "0.32.0", path = "../tendermint", features = ["clock"] }
 serde = { version = "1", default-features = false, features = ["derive"] }
