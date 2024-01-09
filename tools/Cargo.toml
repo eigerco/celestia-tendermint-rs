@@ -1,12 +1,12 @@
 [workspace]
 
 members = [
-    "abci-test",
-    "kvstore-test",
     "proto-compiler",
-    "rpc-probe"
 ]
 
 exclude = [
-    "no-std-check"
+    "abci-test",
+    "kvstore-test",
+    "no-std-check",
+    "rpc-probe"
 ]
