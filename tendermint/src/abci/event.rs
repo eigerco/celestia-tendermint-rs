@@ -30,7 +30,7 @@ impl Event {
     /// trait allow ergonomic event construction, as in this example:
     ///
     /// ```
-    /// use tendermint::abci::{Event, EventAttributeIndexExt};
+    /// use celestia_tendermint::abci::{Event, EventAttributeIndexExt};
     ///
     /// let event = Event::new(
     ///     "app",
