@@ -8,10 +8,10 @@ use core::{
     time::Duration,
 };
 
+use celestia_tendermint_proto::{google::protobuf::Timestamp, serializers::timestamp, Protobuf};
 #[cfg(all(feature = "clock", target_arch = "wasm32", feature = "wasm-bindgen"))]
 use instant::SystemTime;
 use serde::{Deserialize, Serialize};
-use tendermint_proto::{google::protobuf::Timestamp, serializers::timestamp, Protobuf};
 use time::{
     format_description::well_known::Rfc3339,
     macros::{datetime, offset},

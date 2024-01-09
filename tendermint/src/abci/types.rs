@@ -121,8 +121,8 @@ pub struct Snapshot {
 mod v0_34 {
     use super::{CommitInfo, Misbehavior, MisbehaviorKind, Snapshot, Validator, VoteInfo};
     use crate::{prelude::*, Error};
-    use tendermint_proto::v0_34::abci as pb;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_34::abci as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     use bytes::Bytes;
 
@@ -280,8 +280,8 @@ mod v0_34 {
 mod v0_37 {
     use super::{CommitInfo, Misbehavior, MisbehaviorKind, Snapshot, Validator, VoteInfo};
     use crate::{prelude::*, Error};
-    use tendermint_proto::v0_37::abci as pb;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_37::abci as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     use bytes::Bytes;
 

@@ -44,7 +44,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test-all-features
-          args: -p tendermint
+          args: -p celestia-tendermint
 
   # tendermint-rpc:
   #   runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test-all-features
-          args: -p tendermint-proto
+          args: -p celestia-tendermint-proto
 
   # tendermint-light-client:
   #   runs-on: ubuntu-latest

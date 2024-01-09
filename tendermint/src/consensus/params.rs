@@ -55,14 +55,14 @@ fn key_type(s: &str) -> public_key::Algorithm {
 }
 
 mod v0_34 {
-    use tendermint_proto::v0_34::{
+    use celestia_tendermint_proto::v0_34::{
         abci::ConsensusParams as RawAbciParams,
         types::{
             ConsensusParams as RawParams, ValidatorParams as RawValidatorParams,
             VersionParams as RawVersionParams,
         },
     };
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::Protobuf;
 
     use super::{key_type, Params, ValidatorParams, VersionParams};
     use crate::{error::Error, prelude::*, public_key};
@@ -186,11 +186,11 @@ mod v0_34 {
 }
 
 mod v0_37 {
-    use tendermint_proto::v0_37::types::{
+    use celestia_tendermint_proto::v0_37::types::{
         ConsensusParams as RawParams, ValidatorParams as RawValidatorParams,
         VersionParams as RawVersionParams,
     };
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::Protobuf;
 
     use super::{key_type, Params, ValidatorParams, VersionParams};
     use crate::{error::Error, prelude::*, public_key};

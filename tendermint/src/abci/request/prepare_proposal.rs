@@ -15,8 +15,8 @@ pub struct PrepareProposal {
 mod v0_34 {
     use super::PrepareProposal;
     use crate::{prelude::*, Error};
-    use tendermint_proto::v0_34::abci as pb;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_34::abci as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     impl From<PrepareProposal> for pb::RequestPrepareProposal {
         fn from(value: PrepareProposal) -> Self {

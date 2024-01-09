@@ -1,5 +1,5 @@
-use tendermint_proto::v0_34::abci as pb;
-use tendermint_proto::Protobuf;
+use celestia_tendermint_proto::v0_34::abci as pb;
+use celestia_tendermint_proto::Protobuf;
 
 use crate::abci::request::{ConsensusRequest, InfoRequest, MempoolRequest, SnapshotRequest};
 use crate::abci::MethodKind;

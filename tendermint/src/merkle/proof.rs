@@ -1,7 +1,7 @@
 //! Merkle proofs
 
+use celestia_tendermint_proto::v0_37::crypto::Proof as RawProof;
 use serde::{Deserialize, Serialize};
-use tendermint_proto::v0_37::crypto::Proof as RawProof;
 
 use crate::{prelude::*, serializers, Hash};
 
