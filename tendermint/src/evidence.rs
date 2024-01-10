@@ -5,9 +5,9 @@ use core::{
     slice,
 };
 
+use celestia_tendermint_proto::google::protobuf::Duration as RawDuration;
+use celestia_tendermint_proto::Protobuf;
 use serde::{Deserialize, Serialize};
-use tendermint_proto::google::protobuf::Duration as RawDuration;
-use tendermint_proto::Protobuf;
 
 use crate::{
     block::{signed_header::SignedHeader, Height},

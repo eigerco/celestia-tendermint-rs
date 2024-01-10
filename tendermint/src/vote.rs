@@ -9,9 +9,9 @@ use core::convert::Infallible;
 use core::{fmt, str::FromStr};
 
 use bytes::BufMut;
+use celestia_tendermint_proto::v0_37::types::{CanonicalVote as RawCanonicalVote, Vote as RawVote};
+use celestia_tendermint_proto::{Error as ProtobufError, Protobuf};
 use serde::{Deserialize, Serialize};
-use tendermint_proto::v0_37::types::{CanonicalVote as RawCanonicalVote, Vote as RawVote};
-use tendermint_proto::{Error as ProtobufError, Protobuf};
 
 pub use self::{
     canonical_vote::CanonicalVote, power::Power, sign_vote::*, validator_index::ValidatorIndex,

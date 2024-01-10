@@ -1,5 +1,5 @@
+use celestia_tendermint_proto::v0_34::types::Data as RawData;
 use serde::{Deserialize, Serialize};
-use tendermint_proto::v0_34::types::Data as RawData;
 
 use crate::prelude::*;
 
@@ -15,8 +15,8 @@ pub struct Data {
 mod v0_34 {
     use super::Data;
     use crate::{prelude::*, Error};
-    use tendermint_proto::v0_34::types::Data as RawData;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_34::types::Data as RawData;
+    use celestia_tendermint_proto::Protobuf;
 
     impl Protobuf<RawData> for Data {}
 

@@ -1,5 +1,6 @@
 // Re-export according to alloc::prelude::v1 because it is not yet stabilized
 // https://doc.rust-lang.org/src/alloc/prelude/v1.rs.html
+#[allow(unused)]
 pub use alloc::{
     borrow::ToOwned,
     boxed::Box,

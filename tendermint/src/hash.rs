@@ -7,9 +7,9 @@ use core::{
 };
 
 use bytes::Bytes;
+use celestia_tendermint_proto::Protobuf;
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
 use subtle_encoding::{Encoding, Hex};
-use tendermint_proto::Protobuf;
 
 use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};

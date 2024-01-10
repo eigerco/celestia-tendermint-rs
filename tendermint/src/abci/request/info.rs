@@ -19,8 +19,8 @@ pub struct Info {
 
 mod v0_34 {
     use super::Info;
-    use tendermint_proto::v0_34::abci as pb;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_34::abci as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     impl From<Info> for pb::RequestInfo {
         fn from(info: Info) -> Self {
@@ -50,8 +50,8 @@ mod v0_34 {
 
 mod v0_37 {
     use super::Info;
-    use tendermint_proto::v0_37::abci as pb;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_37::abci as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     impl From<Info> for pb::RequestInfo {
         fn from(info: Info) -> Self {

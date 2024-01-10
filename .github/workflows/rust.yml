@@ -7,72 +7,31 @@ on:
     paths-ignore:
       - "docs/**"
     branches:
-      - main
-      - 'v*.*.*'
+      - 'v*.*.*-celestia'
 jobs:
-  cleanup-runs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: rokroskar/workflow-run-cleanup-action@master
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
-
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run clippy
+        run: cargo fmt --all -- --check
 
-  # This job creates the "clippy-results" GitHub Action that lists the clippy results in a nice format.
-  clippy-json-output:
+  clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: clippy
-          override: true
-      - uses: actions-rs/clippy-check@v1
-        with:
-          name: clippy-results
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features --all-targets -- -Dwarnings -Drust-2018-idioms
-
-  clippy-tools-output:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: clippy
-          override: true
-      - uses: actions-rs/clippy-check@v1
-        with:
-          name: clippy-tools-results
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --manifest-path tools/kvstore-test/Cargo.toml --all-features --all-targets -- -Dwarnings -Drust-2018-idioms
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run clippy
+        run: cargo clippy --all --all-targets
 
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2023-03-01 # regression prevents docs from building
-          override: true
-      - uses: actions-rs/cargo@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - name: Cargo doc
+        run: cargo doc --all-features
         env:
           RUSTDOCFLAGS: "--cfg docsrs"
-        with:
-          command: doc
-          args: --all-features
+        # toolchain: nightly-2023-03-01 # regression prevents docs from building

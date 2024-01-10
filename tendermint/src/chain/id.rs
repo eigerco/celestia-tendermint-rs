@@ -8,8 +8,8 @@ use core::{
     str::{self, FromStr},
 };
 
+use celestia_tendermint_proto::Protobuf;
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
-use tendermint_proto::Protobuf;
 
 use crate::serializers::cow_str::CowStr;
 use crate::{error::Error, prelude::*};
@@ -58,7 +58,7 @@ impl Id {
 
     /// Get the chain ID as a raw bytes.
     pub fn as_bytes(&self) -> &[u8] {
-        self.0.as_str().as_bytes()
+        self.0.as_bytes()
     }
 }
 

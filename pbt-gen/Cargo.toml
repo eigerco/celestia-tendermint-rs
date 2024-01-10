@@ -15,6 +15,9 @@ description = """
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 [features]
 default = ["time"]
 

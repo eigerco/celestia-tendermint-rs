@@ -19,7 +19,8 @@ pub const TENDERMINT_VERSIONS: &[TendermintVersion] = &[
     TendermintVersion {
         repo: "https://github.com/celestiaorg/celestia-core",
         ident: "v0_34",
-        commitish: "v0.34.x-celestia",
+        // TODO: update
+        commitish: "a1b07a1e6c77595466da9c61b37c83b4769b47e7", // "v0.34.x-celestia",
     },
     TendermintVersion {
         repo: "https://github.com/cometbft/cometbft",

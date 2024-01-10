@@ -1,6 +1,12 @@
 [workspace]
+resolver = "2"
 
 members = [
+    "proto",
+    "tendermint",
+]
+
+exclude = [
     "abci",
     "config",
     "light-client",
@@ -10,15 +16,10 @@ members = [
     "light-client-js",
     "p2p",
     "pbt-gen",
-    "proto",
     "rpc",
     "std-ext",
-    "tendermint",
     "test",
-    "testgen"
-]
-
-exclude = [
+    "testgen",
     "proto-compiler",
     "tools/no-std-check"
 ]

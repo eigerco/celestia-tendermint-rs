@@ -10,6 +10,9 @@ keywords    = ["blockchain", "tendermint", "testing"]
 readme      = "README.md"
 authors     = ["Alexander Simmerl <a.simmerl@gmail.com>"]
 
+# dont publish this package as a part of celestia-tendermint fork
+publish = false
+
 [lib]
 test = true
 

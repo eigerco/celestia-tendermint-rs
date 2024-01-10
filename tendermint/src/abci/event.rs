@@ -30,7 +30,7 @@ impl Event {
     /// trait allow ergonomic event construction, as in this example:
     ///
     /// ```
-    /// use tendermint::abci::{Event, EventAttributeIndexExt};
+    /// use celestia_tendermint::abci::{Event, EventAttributeIndexExt};
     ///
     /// let event = Event::new(
     ///     "app",
@@ -202,8 +202,8 @@ mod v0_34 {
     use crate::prelude::*;
     use core::convert::{TryFrom, TryInto};
 
-    use tendermint_proto::v0_34::abci as pb;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_34::abci as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     impl From<EventAttribute> for pb::EventAttribute {
         fn from(event: EventAttribute) -> Self {
@@ -264,8 +264,8 @@ mod v0_37 {
     use crate::prelude::*;
     use core::convert::{TryFrom, TryInto};
 
-    use tendermint_proto::v0_37::abci as pb;
-    use tendermint_proto::Protobuf;
+    use celestia_tendermint_proto::v0_37::abci as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     impl From<EventAttribute> for pb::EventAttribute {
         fn from(event: EventAttribute) -> Self {
