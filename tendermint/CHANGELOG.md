@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.32.0](https://github.com/eigerco/celestia-tendermint-rs/releases/tag/celestia-tendermint-v0.32.0) - 2024-01-12
 
+This is the first release of the celestia-tendermint-rs, fork of tendermint-rs.
+
 ### Added
 - allow deserialization of an empty hash ([#7](https://github.com/eigerco/celestia-tendermint-rs/pull/7))
 - use protobuffers from celestia-core ([#1](https://github.com/eigerco/celestia-tendermint-rs/pull/1))
@@ -15,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Use `instant` only in wasm32 and with wasm-bindgen feature
 - fix doc generation ([#2](https://github.com/eigerco/celestia-tendermint-rs/pull/2))
+
+### Fixed - inherited
 - fix deserialize power field in validator_update ([#451](https://github.com/eigerco/celestia-tendermint-rs/pull/451))
 - fix master again ([#159](https://github.com/eigerco/celestia-tendermint-rs/pull/159))
 - fix build on master 🔧💚 ([#157](https://github.com/eigerco/celestia-tendermint-rs/pull/157))
@@ -28,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remove unneded clones in proto encoding
 - Remove unneeded allocations in serializers ([#6](https://github.com/eigerco/celestia-tendermint-rs/pull/6))
 - Use Hash instead of Option<Hash> ([#4](https://github.com/eigerco/celestia-tendermint-rs/pull/4))
+
+### Other - inherited
 - Prepare release for v0.32.0 ([#1314](https://github.com/eigerco/celestia-tendermint-rs/pull/1314))
 - Loosen bounds on merkle hash arguments ([#1311](https://github.com/eigerco/celestia-tendermint-rs/pull/1311))
 - Attack detector and evidence reporting ([#1292](https://github.com/eigerco/celestia-tendermint-rs/pull/1292))
