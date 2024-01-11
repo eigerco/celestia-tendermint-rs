@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.32.0](https://github.com/eigerco/celestia-tendermint-rs/releases/tag/celestia-tendermint-proto-v0.32.0) - 2024-01-11
 
+This is the first release of the celestia-tendermint-rs, fork of tendermint-rs.
+
 ### Added
 - *(proto)* allow serialization of Event ([#9](https://github.com/eigerco/celestia-tendermint-rs/pull/9))
 - use protobuffers from celestia-core ([#1](https://github.com/eigerco/celestia-tendermint-rs/pull/1))
@@ -21,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update prost to 0.12.0
 - remove unneded clones in proto encoding
 - Remove unneeded allocations in serializers ([#6](https://github.com/eigerco/celestia-tendermint-rs/pull/6))
+
+### Other - inherited
 - Prepare release for v0.32.0 ([#1314](https://github.com/eigerco/celestia-tendermint-rs/pull/1314))
 - Attack detector and evidence reporting ([#1292](https://github.com/eigerco/celestia-tendermint-rs/pull/1292))
 - Prepare release v0.31.1 ([#1298](https://github.com/eigerco/celestia-tendermint-rs/pull/1298))
