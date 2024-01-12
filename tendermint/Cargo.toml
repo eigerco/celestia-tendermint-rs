@@ -30,7 +30,7 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
-celestia-tendermint-proto = { default-features = false, path = "../proto" }
+celestia-tendermint-proto = { version = "0.32.0", default-features = false, path = "../proto" }
 
 bytes = { version = "1.2", default-features = false, features = ["serde"] }
 digest = { version = "0.10", default-features = false }
