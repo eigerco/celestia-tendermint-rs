@@ -1,5 +1,13 @@
 # CHANGELOG
 
+
+## Celestia-tendermint-rs
+
+*Jan 11th, 2024*
+
+This is the first release of the Celestia-tendermint-rs fork. From now on, the changelog will be recorded on per-crate basis.
+Currently only the Celestia-tendermint and Celestia-tendermint-proto crates will be maintained.
+
 ## v0.32.0
 
 *May 3rd, 2023*
