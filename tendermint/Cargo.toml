@@ -2,8 +2,8 @@
 name       = "celestia-tendermint"
 version    = "0.32.0"
 license    = "Apache-2.0"
-homepage   = "https://www.tendermint.com/"
-repository = "https://github.com/informalsystems/tendermint-rs/tree/main/tendermint"
+homepage   = "eiger.co"
+repository = "https://github.com/eigerco/celestia-tendermint-rs"
 readme     = "../README.md"
 categories = ["cryptography", "cryptography::cryptocurrencies", "database"]
 keywords   = ["blockchain", "bft", "consensus", "cosmos", "tendermint"]
@@ -23,6 +23,7 @@ authors = [
     "Ismail Khoffi <Ismail.Khoffi@gmail.com>",
     "ValarDragon <dojha12@gmail.com>",
     "Tony Arcieri <tony@iqlusion.io>",
+    "Eiger <hello@eiger.co>"
 ]
 
 [package.metadata.docs.rs]
