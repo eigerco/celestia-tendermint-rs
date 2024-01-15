@@ -2,7 +2,7 @@
 name       = "celestia-tendermint"
 version    = "0.32.0"
 license    = "Apache-2.0"
-homepage   = "eiger.co"
+homepage   = "https://www.eiger.co"
 repository = "https://github.com/eigerco/celestia-tendermint-rs"
 readme     = "../README.md"
 categories = ["cryptography", "cryptography::cryptocurrencies", "database"]
