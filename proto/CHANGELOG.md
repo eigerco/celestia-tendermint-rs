@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.32.1](https://github.com/eigerco/celestia-tendermint-rs/compare/celestia-tendermint-proto-v0.32.0...celestia-tendermint-proto-v0.32.1) - 2024-01-15
+
+### Other
+- fully specify homepage url in metadata ([#27](https://github.com/eigerco/celestia-tendermint-rs/pull/27))
+- align authors, repository and homepage keys ([#25](https://github.com/eigerco/celestia-tendermint-rs/pull/25))
+
 ## [0.32.0](https://github.com/eigerco/celestia-tendermint-rs/releases/tag/celestia-tendermint-proto-v0.32.0) - 2024-01-12
 
 This is the first release of the celestia-tendermint-rs, fork of tendermint-rs.
