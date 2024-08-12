@@ -1,3 +1,6 @@
+> [!NOTE]  
+> Celestia specific fork of Tendermint used in [Lumina](https://github.com/eigerco/lumina). Used sparsely, we aim to get rid of it in the future.
+
 # celestia-tendermint-rs
 
 [![Crate][crate-image]][crate-link]
