@@ -219,8 +219,6 @@ pub static CUSTOM_FIELD_ATTRIBUTES: &[(&str, &str)] = &[
     ),
     (".tendermint.types.TxProof.data", BASE64STRING),
     (".tendermint.types.TxProof.root_hash", HEXSTRING),
-    (".tendermint.crypto.Proof.index", QUOTED),
-    (".tendermint.crypto.Proof.total", QUOTED),
     (".tendermint.crypto.Proof.aunts", VEC_BASE64STRING),
     (".tendermint.crypto.Proof.leaf_hash", BASE64STRING),
 ];

@@ -62,5 +62,5 @@ pub mod version {
 
 pub mod meta {
     pub const REPOSITORY: &str = "https://github.com/celestiaorg/celestia-core";
-    pub const COMMITISH: &str = "v0.34.x-celestia";
+    pub const COMMITISH: &str = "a1b07a1e6c77595466da9c61b37c83b4769b47e7";
 }

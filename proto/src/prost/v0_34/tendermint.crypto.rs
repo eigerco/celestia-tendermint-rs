@@ -3,10 +3,8 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Proof {
     #[prost(int64, tag = "1")]
-    #[serde(with = "crate::serializers::from_str")]
     pub total: i64,
     #[prost(int64, tag = "2")]
-    #[serde(with = "crate::serializers::from_str")]
     pub index: i64,
     #[prost(bytes = "vec", tag = "3")]
     #[serde(with = "crate::serializers::bytes::base64string")]
