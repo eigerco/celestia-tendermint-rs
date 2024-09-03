@@ -31,6 +31,42 @@ pub mod hexstring {
     }
 }
 
+/// Serialize into and deserialize from a sequence of _hexstring_.
+pub mod vec_hexstring {
+    use serde::{Deserialize, Deserializer, Serializer};
+    use subtle_encoding::hex;
+
+    use crate::prelude::*;
+    use crate::serializers::cow_str::CowStr;
+
+    /// Deserialize array into `Vec<Vec<u8>>`
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<Vec<u8>>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Option::<Vec<CowStr>>::deserialize(deserializer)?
+            .unwrap_or_default()
+            .into_iter()
+            .map(|s| hex::decode_upper(s).map_err(serde::de::Error::custom))
+            .collect()
+    }
+
+    /// Serialize from `Vec<T>` into `Vec<hexstring>`
+    pub fn serialize<S, T>(value: &[T], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+        T: AsRef<[u8]>,
+    {
+        let hexstrings = value
+            .iter()
+            .map(|v| {
+                String::from_utf8(hex::encode_upper(v.as_ref())).map_err(serde::ser::Error::custom)
+            })
+            .collect::<Result<Vec<String>, S::Error>>()?;
+        serializer.serialize_some(&hexstrings)
+    }
+}
+
 /// Serialize into base64string, deserialize from base64string
 pub mod base64string {
     use serde::{Deserialize, Deserializer, Serializer};

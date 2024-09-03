@@ -39,6 +39,7 @@ const QUOTED: &str = r#"#[serde(with = "crate::serializers::from_str")]"#;
 const QUOTED_WITH_DEFAULT: &str = r#"#[serde(with = "crate::serializers::from_str", default)]"#;
 const DEFAULT: &str = r#"#[serde(default)]"#;
 const HEXSTRING: &str = r#"#[serde(with = "crate::serializers::bytes::hexstring")]"#;
+const VEC_HEXSTRING: &str = r#"#[serde(with = "crate::serializers::bytes::vec_hexstring")]"#;
 const BASE64STRING: &str = r#"#[serde(with = "crate::serializers::bytes::base64string")]"#;
 const VEC_BASE64STRING: &str = r#"#[serde(with = "crate::serializers::bytes::vec_base64string")]"#;
 const OPTIONAL: &str = r#"#[serde(with = "crate::serializers::optional")]"#;
@@ -107,6 +108,11 @@ pub static CUSTOM_TYPE_ATTRIBUTES: &[(&str, &str)] = &[
     (".tendermint.types.BlockMeta", SERIALIZED),
     (".tendermint.types.TxProof", SERIALIZED),
     (".tendermint.crypto.Proof", SERIALIZED),
+    (".tendermint.types.RowProof", SERIALIZED),
+    (".tendermint.types.RowProof", DEFAULT),
+    (".tendermint.types.ShareProof", SERIALIZED),
+    (".tendermint.types.NMTProof", SERIALIZED),
+    (".tendermint.types.NMTProof", DEFAULT),
 ];
 
 /// Custom field attributes applied on top of protobuf fields in (a) struct(s)
@@ -221,4 +227,10 @@ pub static CUSTOM_FIELD_ATTRIBUTES: &[(&str, &str)] = &[
     (".tendermint.types.TxProof.root_hash", HEXSTRING),
     (".tendermint.crypto.Proof.aunts", VEC_BASE64STRING),
     (".tendermint.crypto.Proof.leaf_hash", BASE64STRING),
+    (".tendermint.types.RowProof.row_roots", VEC_HEXSTRING),
+    (".tendermint.types.RowProof.root", BASE64STRING),
+    (".tendermint.types.ShareProof.data", VEC_BASE64STRING),
+    (".tendermint.types.ShareProof.namespace_id", BASE64STRING),
+    (".tendermint.types.NMTProof.nodes", VEC_BASE64STRING),
+    (".tendermint.types.NMTProof.leaf_hash", BASE64STRING),
 ];
