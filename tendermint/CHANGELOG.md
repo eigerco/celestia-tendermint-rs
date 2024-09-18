@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.32.2](https://github.com/eigerco/celestia-tendermint-rs/compare/celestia-tendermint-v0.32.1...celestia-tendermint-v0.32.2) - 2024-09-18
+
+### Fixed
+
+- *(proto)* align Proofs serialization with go tendermint ([#31](https://github.com/eigerco/celestia-tendermint-rs/pull/31))
+
+### Other
+
+- Add note about usage in README.md ([#29](https://github.com/eigerco/celestia-tendermint-rs/pull/29))
+
 ## [0.32.1](https://github.com/eigerco/celestia-tendermint-rs/compare/celestia-tendermint-v0.32.0...celestia-tendermint-v0.32.1) - 2024-01-15
 
 ### Other
