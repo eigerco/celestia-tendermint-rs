@@ -6,11 +6,11 @@ edition = "2021"
 publish = false
 
 [dependencies]
-prost-build.workspace = true
-walkdir         = { version = "2.3" }
 git2            = { version = "0.16" }
-tempfile        = { version = "3.5.0" }
-subtle-encoding = { version = "0.5" }
+prost-build     = { version = "0.13.3" }
 serde           = { version = "1.0", features = ["derive"] }
 serde_yaml      = { version = "0.9" }
+subtle-encoding = { version = "0.5" }
+tempfile        = { version = "3.5.0" }
 thiserror       = { version = "1.0" }
+walkdir         = { version = "2.3" }
