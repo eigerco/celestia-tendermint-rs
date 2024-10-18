@@ -24,6 +24,10 @@ exclude = [
     "tools/no-std-check"
 ]
 
+[workspace.dependencies]
+prost = { version = "0.13.3", default-features = false }
+prost-types = { version = "0.13.3", default-features = false }
+
 [profile.release.package.tendermint-light-client-js]
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"

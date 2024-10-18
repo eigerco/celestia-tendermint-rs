@@ -23,8 +23,8 @@ authors    = [
 all-features = true
 
 [dependencies]
-prost = { version = "0.12", default-features = false }
-prost-types = { version = "0.12", default-features = false }
+prost.workspace = true
+prost-types.workspace = true
 bytes = { version = "1.0", default-features = false, features = ["serde"]}
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_bytes = { version = "0.11", default-features = false, features = ["alloc"] }
