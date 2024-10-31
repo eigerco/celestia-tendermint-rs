@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.32.3](https://github.com/eigerco/celestia-tendermint-rs/compare/celestia-tendermint-v0.32.2...celestia-tendermint-v0.32.3) - 2024-10-31
+
+### Other
+
+- Update prost to 0.13.3 ([#32](https://github.com/eigerco/celestia-tendermint-rs/pull/32))
+
 ## [0.32.2](https://github.com/eigerco/celestia-tendermint-rs/compare/celestia-tendermint-v0.32.1...celestia-tendermint-v0.32.2) - 2024-09-18
 
 ### Fixed
