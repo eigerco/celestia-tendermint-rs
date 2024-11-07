@@ -61,6 +61,7 @@ pub mod from_str;
 pub mod nullable;
 pub mod optional;
 pub mod optional_from_str;
+pub mod optional_protobuf_duration;
 pub mod part_set_header_total;
 pub mod public_key;
 pub mod time_duration;

@@ -54,6 +54,17 @@ pub struct RequestEcho {
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct RequestFlush {}
+#[derive(::serde::Deserialize, ::serde::Serialize)]
+#[serde(default)]
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct TimeoutsInfo {
+    #[prost(message, optional, tag = "1")]
+    #[serde(with = "crate::serializers::optional_protobuf_duration")]
+    pub timeout_propose: ::core::option::Option<crate::google::protobuf::Duration>,
+    #[prost(message, optional, tag = "2")]
+    #[serde(with = "crate::serializers::optional_protobuf_duration")]
+    pub timeout_commit: ::core::option::Option<crate::google::protobuf::Duration>,
+}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RequestInfo {
     #[prost(string, tag = "1")]
@@ -139,6 +150,9 @@ pub struct RequestOfferSnapshot {
     /// light client-verified app hash for snapshot height
     #[prost(bytes = "bytes", tag = "2")]
     pub app_hash: ::prost::bytes::Bytes,
+    /// The application version at which the snapshot was taken
+    #[prost(uint64, tag = "3")]
+    pub app_version: u64,
 }
 /// loads a snapshot chunk
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
@@ -162,14 +176,25 @@ pub struct RequestApplySnapshotChunk {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RequestPrepareProposal {
-    /// block_data is an array of transactions that will be included in a block,
-    /// sent to the app for possible modifications.
-    /// applications can not exceed the size of the data passed to it.
+    /// BlockData is a slice of candidate transactions that may be included in a
+    /// block. BlockData is sent to the application so that the application can
+    /// filter and re-arrange the slice of candidate transactions.
     #[prost(message, optional, tag = "1")]
     pub block_data: ::core::option::Option<super::types::Data>,
-    /// If an application decides to populate block_data with extra information, they can not exceed this value.
+    /// BlockDataSize is the maximum size (in bytes) that BlockData should be.
     #[prost(int64, tag = "2")]
     pub block_data_size: i64,
+    /// chain_id is a unique identifier for the blockchain network this proposal
+    /// belongs to (e.g. mocha-1).
+    #[prost(string, tag = "3")]
+    pub chain_id: ::prost::alloc::string::String,
+    /// height is the height of the proposal block
+    #[prost(int64, tag = "4")]
+    pub height: i64,
+    /// time is the time that will end up in the header. This is the voting power
+    /// weighted median of the last commit.
+    #[prost(message, optional, tag = "5")]
+    pub time: ::core::option::Option<crate::google::protobuf::Timestamp>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RequestProcessProposal {
@@ -260,6 +285,8 @@ pub struct ResponseInfo {
     #[serde(default)]
     #[serde(skip_serializing_if = "bytes::Bytes::is_empty")]
     pub last_block_app_hash: ::prost::bytes::Bytes,
+    #[prost(message, optional, tag = "6")]
+    pub timeouts: ::core::option::Option<TimeoutsInfo>,
 }
 /// nondeterministic
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -280,6 +307,8 @@ pub struct ResponseInitChain {
     pub validators: ::prost::alloc::vec::Vec<ValidatorUpdate>,
     #[prost(bytes = "bytes", tag = "3")]
     pub app_hash: ::prost::bytes::Bytes,
+    #[prost(message, optional, tag = "4")]
+    pub timeouts: ::core::option::Option<TimeoutsInfo>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ResponseQuery {
@@ -370,6 +399,8 @@ pub struct ResponseEndBlock {
     pub consensus_param_updates: ::core::option::Option<ConsensusParams>,
     #[prost(message, repeated, tag = "3")]
     pub events: ::prost::alloc::vec::Vec<Event>,
+    #[prost(message, optional, tag = "4")]
+    pub timeouts: ::core::option::Option<TimeoutsInfo>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ResponseCommit {

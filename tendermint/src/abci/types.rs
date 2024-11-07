@@ -6,6 +6,8 @@
 //! [ABCI documentation](https://docs.tendermint.com/master/spec/abci/abci.html#data-types)
 
 use bytes::Bytes;
+use celestia_tendermint_proto::v0_34::abci::TimeoutsInfo as RawTimeoutsInfo;
+use serde::{Deserialize, Serialize};
 
 use crate::{block, prelude::*, vote, Time};
 
@@ -114,14 +116,26 @@ pub struct Snapshot {
     pub metadata: Bytes,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(try_from = "RawTimeoutsInfo", into = "RawTimeoutsInfo")]
+pub struct TimeoutsInfo {
+    /// How long validator waits for a proposal block before prevoting nil.
+    pub timeout_propose: core::time::Duration,
+    /// How long we waits after committing a block, before starting on the new height.
+    pub timeout_commit: core::time::Duration,
+}
+
 // =============================================================================
 // Protobuf conversions
 // =============================================================================
 
 mod v0_34 {
-    use super::{CommitInfo, Misbehavior, MisbehaviorKind, Snapshot, Validator, VoteInfo};
+    use super::{
+        CommitInfo, Misbehavior, MisbehaviorKind, RawTimeoutsInfo, Snapshot, TimeoutsInfo,
+        Validator, VoteInfo,
+    };
     use crate::{prelude::*, Error};
-    use celestia_tendermint_proto::v0_34::abci as pb;
+    use celestia_tendermint_proto::v0_34::abci::{self as pb};
     use celestia_tendermint_proto::Protobuf;
 
     use bytes::Bytes;
@@ -275,6 +289,62 @@ mod v0_34 {
     }
 
     impl Protobuf<pb::Snapshot> for Snapshot {}
+
+    impl TryFrom<RawTimeoutsInfo> for TimeoutsInfo {
+        type Error = Error;
+
+        fn try_from(value: RawTimeoutsInfo) -> Result<Self, Self::Error> {
+            let timeout_propose_dur = value
+                .timeout_propose
+                .ok_or_else(|| Error::missing_timeout_propose())?;
+            let timeout_propose_secs: u64 = timeout_propose_dur
+                .seconds
+                .try_into()
+                .map_err(|_| Error::duration_out_of_range())?;
+            let timeout_propose_nanos = timeout_propose_dur
+                .nanos
+                .try_into()
+                .map_err(|_| Error::duration_out_of_range())?;
+
+            let timeout_commit_dur = value
+                .timeout_commit
+                .ok_or_else(|| Error::missing_timeout_commit())?;
+            let timeout_commit_secs: u64 = timeout_commit_dur
+                .seconds
+                .try_into()
+                .map_err(|_| Error::duration_out_of_range())?;
+            let timeout_commit_nanos = timeout_commit_dur
+                .nanos
+                .try_into()
+                .map_err(|_| Error::duration_out_of_range())?;
+
+            Ok(Self {
+                timeout_propose: core::time::Duration::new(
+                    timeout_propose_secs,
+                    timeout_propose_nanos,
+                ),
+                timeout_commit: core::time::Duration::new(
+                    timeout_commit_secs,
+                    timeout_commit_nanos,
+                ),
+            })
+        }
+    }
+
+    impl From<TimeoutsInfo> for RawTimeoutsInfo {
+        fn from(value: TimeoutsInfo) -> Self {
+            Self {
+                timeout_propose: Some(celestia_tendermint_proto::google::protobuf::Duration {
+                    seconds: value.timeout_propose.as_secs() as i64,
+                    nanos: value.timeout_propose.subsec_nanos() as i32,
+                }),
+                timeout_commit: Some(celestia_tendermint_proto::google::protobuf::Duration {
+                    seconds: value.timeout_commit.as_secs() as i64,
+                    nanos: value.timeout_commit.subsec_nanos() as i32,
+                }),
+            }
+        }
+    }
 }
 
 mod v0_37 {

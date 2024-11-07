@@ -20,7 +20,7 @@ pub const TENDERMINT_VERSIONS: &[TendermintVersion] = &[
         repo: "https://github.com/celestiaorg/celestia-core",
         ident: "v0_34",
         // TODO: update
-        commitish: "a1b07a1e6c77595466da9c61b37c83b4769b47e7", // "v0.34.x-celestia",
+        commitish: "v0.34.x-celestia",
     },
     TendermintVersion {
         repo: "https://github.com/cometbft/cometbft",
@@ -43,6 +43,8 @@ const VEC_HEXSTRING: &str = r#"#[serde(with = "crate::serializers::bytes::vec_he
 const BASE64STRING: &str = r#"#[serde(with = "crate::serializers::bytes::base64string")]"#;
 const VEC_BASE64STRING: &str = r#"#[serde(with = "crate::serializers::bytes::vec_base64string")]"#;
 const OPTIONAL: &str = r#"#[serde(with = "crate::serializers::optional")]"#;
+const OPTIONAL_PROTOBUF_DURATION: &str =
+    r#"#[serde(with = "crate::serializers::optional_protobuf_duration")]"#;
 const BYTES_SKIP_IF_EMPTY: &str = r#"#[serde(skip_serializing_if = "bytes::Bytes::is_empty")]"#;
 const SKIP: &str = "#[serde(skip)]";
 const RENAME_ALL_PASCALCASE: &str = r#"#[serde(rename_all = "PascalCase")]"#;
@@ -101,6 +103,8 @@ pub static CUSTOM_TYPE_ATTRIBUTES: &[(&str, &str)] = &[
     (".tendermint.abci.Event", SERIALIZED),
     (".tendermint.abci.EventAttribute", SERIALIZED),
     (".tendermint.abci.ResponseInfo", SERIALIZED),
+    (".tendermint.abci.TimeoutsInfo", SERIALIZED),
+    (".tendermint.abci.TimeoutsInfo", DEFAULT),
     (".tendermint.types.CanonicalBlockID", SERIALIZED),
     (".tendermint.types.CanonicalPartSetHeader", SERIALIZED),
     (".tendermint.types.Validator", SERIALIZED),
@@ -147,6 +151,14 @@ pub static CUSTOM_FIELD_ATTRIBUTES: &[(&str, &str)] = &[
     (
         ".tendermint.abci.ResponseInfo.last_block_app_hash",
         BYTES_SKIP_IF_EMPTY,
+    ),
+    (
+        ".tendermint.abci.TimeoutsInfo.timeout_propose",
+        OPTIONAL_PROTOBUF_DURATION,
+    ),
+    (
+        ".tendermint.abci.TimeoutsInfo.timeout_commit",
+        OPTIONAL_PROTOBUF_DURATION,
     ),
     (".tendermint.types.BlockID.hash", HEXSTRING),
     (".tendermint.types.BlockID.part_set_header", RENAME_PARTS),

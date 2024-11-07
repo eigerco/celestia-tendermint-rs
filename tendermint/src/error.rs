@@ -133,6 +133,12 @@ define_error! {
         MissingConsensusParams
             |_| { format_args!("missing consensus params") },
 
+        MissingTimeoutPropose
+            |_| { format_args!("missing timeout propose") },
+
+        MissingTimeoutCommit
+            |_| { format_args!("missing timeout commit") },
+
         InvalidTimestamp
             { reason: String }
             | e | { format_args!("invalid timestamp: {}", e.reason) },

@@ -6,3 +6,19 @@ pub struct BlockStoreState {
     #[prost(int64, tag = "2")]
     pub height: i64,
 }
+/// TxInfo describes the location of a tx inside a committed block
+/// as well as the result of executing the transaction and the error log output.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TxInfo {
+    #[prost(int64, tag = "1")]
+    pub height: i64,
+    #[prost(uint32, tag = "2")]
+    pub index: u32,
+    /// The response code of executing the tx. 0 means
+    /// successfully executed, all others are error codes.
+    #[prost(uint32, tag = "3")]
+    pub code: u32,
+    /// The error log output generated if the transaction execution fails.
+    #[prost(string, tag = "4")]
+    pub error: ::prost::alloc::string::String,
+}
