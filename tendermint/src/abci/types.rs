@@ -296,7 +296,7 @@ mod v0_34 {
         fn try_from(value: RawTimeoutsInfo) -> Result<Self, Self::Error> {
             let timeout_propose_dur = value
                 .timeout_propose
-                .ok_or_else(|| Error::missing_timeout_propose())?;
+                .ok_or_else(Error::missing_timeout_propose)?;
             let timeout_propose_secs: u64 = timeout_propose_dur
                 .seconds
                 .try_into()
@@ -308,7 +308,7 @@ mod v0_34 {
 
             let timeout_commit_dur = value
                 .timeout_commit
-                .ok_or_else(|| Error::missing_timeout_commit())?;
+                .ok_or_else(Error::missing_timeout_commit)?;
             let timeout_commit_secs: u64 = timeout_commit_dur
                 .seconds
                 .try_into()
