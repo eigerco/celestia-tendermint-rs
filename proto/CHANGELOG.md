@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [0.33.0](https://github.com/eigerco/celestia-tendermint-rs/compare/celestia-tendermint-proto-v0.32.2...celestia-tendermint-proto-v0.33.0) - 2024-10-31
+- release introduced to mark breaking change of updating prost
 
 ### Other
 

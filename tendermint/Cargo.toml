@@ -1,6 +1,6 @@
 [package]
 name       = "celestia-tendermint"
-version    = "0.32.3"
+version    = "0.33.0"
 license    = "Apache-2.0"
 homepage   = "https://www.eiger.co"
 repository = "https://github.com/eigerco/celestia-tendermint-rs"
@@ -33,7 +33,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 [dependencies]
 prost.workspace = true
 prost-types.workspace = true
-celestia-tendermint-proto = { version = "0.32.3", default-features = false, path = "../proto" }
+celestia-tendermint-proto = { version = "0.33.0", default-features = false, path = "../proto" }
 
 bytes = { version = "1.2", default-features = false, features = ["serde"] }
 digest = { version = "0.10", default-features = false }
