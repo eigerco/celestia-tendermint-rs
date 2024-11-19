@@ -456,15 +456,6 @@ pub struct EvidenceList {
     #[serde(with = "crate::serializers::nullable")]
     pub evidence: ::prost::alloc::vec::Vec<Evidence>,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct EventDataRoundState {
-    #[prost(int64, tag = "1")]
-    pub height: i64,
-    #[prost(int32, tag = "2")]
-    pub round: i32,
-    #[prost(string, tag = "3")]
-    pub step: ::prost::alloc::string::String,
-}
 #[derive(::serde::Deserialize, ::serde::Serialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
@@ -476,6 +467,15 @@ pub struct Block {
     pub evidence: ::core::option::Option<EvidenceList>,
     #[prost(message, optional, tag = "4")]
     pub last_commit: ::core::option::Option<Commit>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EventDataRoundState {
+    #[prost(int64, tag = "1")]
+    pub height: i64,
+    #[prost(int32, tag = "2")]
+    pub round: i32,
+    #[prost(string, tag = "3")]
+    pub step: ::prost::alloc::string::String,
 }
 #[derive(::serde::Deserialize, ::serde::Serialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]

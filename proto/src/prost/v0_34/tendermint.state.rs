@@ -83,4 +83,7 @@ pub struct State {
     /// the latest AppHash we've received from calling abci.Commit()
     #[prost(bytes = "vec", tag = "13")]
     pub app_hash: ::prost::alloc::vec::Vec<u8>,
+    /// timeouts to be used for the next block height
+    #[prost(message, optional, tag = "15")]
+    pub timeouts: ::core::option::Option<super::abci::TimeoutsInfo>,
 }

@@ -1,5 +1,6 @@
+use crate::abci::types::TimeoutsInfo;
 use crate::{block, prelude::*, AppHash};
-use celestia_tendermint_proto::v0_37::abci as pb;
+use celestia_tendermint_proto::v0_34::abci as pb;
 
 use serde::{Deserialize, Serialize};
 
@@ -17,14 +18,54 @@ pub struct Info {
     pub last_block_height: block::Height,
     /// The latest result of [`Commit`](super::super::Request::Commit).
     pub last_block_app_hash: AppHash,
+    /// Timeout information.
+    pub timeouts: Option<TimeoutsInfo>,
 }
 
 // =============================================================================
 // Protobuf conversions
 // =============================================================================
 
-tendermint_pb_modules! {
+mod v0_34 {
     use super::Info;
+    use celestia_tendermint_proto::v0_34 as pb;
+    use celestia_tendermint_proto::Protobuf;
+
+    impl From<Info> for pb::abci::ResponseInfo {
+        fn from(info: Info) -> Self {
+            Self {
+                data: info.data,
+                version: info.version,
+                app_version: info.app_version,
+                last_block_height: info.last_block_height.into(),
+                last_block_app_hash: info.last_block_app_hash.into(),
+                timeouts: info.timeouts.map(|t| t.into()),
+            }
+        }
+    }
+
+    impl TryFrom<pb::abci::ResponseInfo> for Info {
+        type Error = crate::Error;
+
+        fn try_from(info: pb::abci::ResponseInfo) -> Result<Self, Self::Error> {
+            Ok(Self {
+                data: info.data,
+                version: info.version,
+                app_version: info.app_version,
+                last_block_height: info.last_block_height.try_into()?,
+                last_block_app_hash: info.last_block_app_hash.try_into()?,
+                timeouts: info.timeouts.map(|t| t.try_into()).transpose()?,
+            })
+        }
+    }
+
+    impl Protobuf<pb::abci::ResponseInfo> for Info {}
+}
+
+mod v0_37 {
+    use super::Info;
+    use celestia_tendermint_proto::v0_37 as pb;
+    use celestia_tendermint_proto::Protobuf;
 
     impl From<Info> for pb::abci::ResponseInfo {
         fn from(info: Info) -> Self {
@@ -48,6 +89,7 @@ tendermint_pb_modules! {
                 app_version: info.app_version,
                 last_block_height: info.last_block_height.try_into()?,
                 last_block_app_hash: info.last_block_app_hash.try_into()?,
+                timeouts: None,
             })
         }
     }
